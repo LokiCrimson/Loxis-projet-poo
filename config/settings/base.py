@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SECRET_KEY = 'django-insecure-remplace-this-with-a-real-hidden-key-later'
 DEBUG = True

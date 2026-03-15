@@ -88,11 +88,25 @@ Les permissions basees sur les roles sont definies dans `common/permissions.py`.
 
 - **Entites** : BAIL, REVISION DE LOYER
 - **Logique** : Validation du chevauchement des dates des baux.
+- **Routes API** :
+- `POST/GET /finances/paiements/ `- Lister ou créer un paiement de loyer
+- `GET/PUT /finances/paiements/<id>/ `- Détail ou modification d’un paiement
+- `GET /finances/paiements/<id>/quittance/ `- Télécharger la quittance de paiement
+- `POST /finances/paiements/<id>/renvoyer/ `- Renvoyer la quittance au locataire
+- `GET /finances/impayes/` - Lister les loyers impayés
+- `POST/GET /finances/depenses/` - Lister ou créer une dépense
+- `GET /finances/rapport/<property_id>/` - Générer le rapport financier d’un bien
+- `GET /finances/export/` - Exporter les données financières (CSV, Excel, etc.)
 
 ### 4. `apps/finances/` - Comptabilite et transactions
 
 - **Entites** : PAIEMENT DE LOYER, QUITTANCE, CATEGORIE DE DEPENSE, DEPENSE
 - **Logique** : Suivi des impayes, generation automatique des quittances, suivi des charges.
+- **Routes API** :
+- `POST/GET /api/baux/` - Lister ou créer un bail
+- `GET/PUT /api/baux/<id>/` - Détail ou modification d’un bail
+- `POST /api/baux/<id>/resilier/` - Résilier un bail
+- `POST/GET /api/baux/<lease_id>/revisions/` - Lister ou créer une révision de loyer pour un bail
 
 ### 5. `apps/core/` - Elements transverses et systeme
 
