@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.core.exceptions import ValidationError
-from .models import Property, PropertyType, PropertyCategory, PropertyPhoto
+from .models import Property, PropertyType, PropertyCategory, PropertyPhoto, StatutBienEnum
 from apps.core.services import log_audit
 
 @transaction.atomic
@@ -18,7 +18,7 @@ def create_property(*, owner_id: int, type_id: int, actor, **data) -> Property:
         owner_id=owner_id,
         property_type=property_type,
         category=category,
-        status=Property.Status.VACANT,
+        status=StatutBienEnum.VACANT,
         **data
     )
     property_obj.full_clean()

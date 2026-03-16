@@ -1,6 +1,8 @@
 from django.urls import path
 from .apis import LeaseListCreateView, LeaseDetailView, LeaseTerminateView, RentRevisionListCreateView
 
+app_name = 'leases'
+
 urlpatterns = [
     path('baux/', LeaseListCreateView.as_view(), name='lease-list-create'),
     path('baux/<int:pk>/', LeaseDetailView.as_view(), name='lease-detail'),

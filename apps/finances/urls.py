@@ -5,6 +5,8 @@ from .apis import (
     FinancialReportView, ExportView
 )
 
+app_name = 'finances'
+
 urlpatterns = [
     path('finances/paiements/', RentPaymentListCreateView.as_view(), name='rent-payment-list-create'),
     path('finances/paiements/<int:pk>/', RentPaymentDetailView.as_view(), name='rent-payment-detail'),

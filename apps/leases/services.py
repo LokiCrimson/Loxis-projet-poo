@@ -3,6 +3,7 @@ from django.db import transaction
 from datetime import date
 import json
 from apps.core.models import AuditLog
+from apps.users.models import User
 from apps.properties.models import StatutBienEnum
 from .models import Lease, RentRevision, StatutBailEnum
 from .selectors import get_active_lease_for_property, get_active_lease_for_tenant
@@ -26,7 +27,7 @@ def create_lease(*, bien_id: int, locataire_id: int, data: dict, created_by: Use
     
     with transaction.atomic():
         bien = Property.objects.get(id=bien_id)
-        if bien.statut != StatutBienEnum.VACANT:
+        if bien.status != StatutBienEnum.VACANT:
             raise ValidationError("Le bien n'est pas vacant.")
         
         if get_active_lease_for_property(bien_id):
@@ -41,7 +42,7 @@ def create_lease(*, bien_id: int, locataire_id: int, data: dict, created_by: Use
             **data
         )
         
-        bien.statut = StatutBienEnum.LOUE
+        bien.status = StatutBienEnum.LOUE
         bien.save()
         
         # Assume create_alert function exists
@@ -89,7 +90,7 @@ def terminate_lease(*, lease_id: int, data: dict, terminated_by: User) -> dict:
             setattr(lease, key, value)
         lease.save()
         
-        lease.bien.statut = StatutBienEnum.VACANT
+        lease.bien.status = StatutBienEnum.VACANT
         lease.bien.save()
         
         if lease.depot_restitue and lease.depot_restitue < lease.depot_garantie_verse:

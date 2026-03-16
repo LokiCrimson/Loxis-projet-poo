@@ -1,5 +1,11 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from apps.users.models import User
+
+class StatutBienEnum(models.TextChoices):
+    VACANT = 'VACANT', _('Vacant')
+    LOUE = 'RENTED', _('Loué')
+    EN_TRAVAUX = 'UNDER_WORK', _('En travaux')
 
 class PropertyCategory(models.Model):
     """CU-02 : Gérer les catégories de biens (ex: Appartement, Bureau)"""
@@ -21,18 +27,12 @@ class PropertyType(models.Model):
         return f"{self.name} ({self.category.name})"
 
 class Property(models.Model):
-    """CU-06, CU-08, CU-20 : Gestion des biens"""
-    class Status(models.TextChoices):
-        VACANT = 'VACANT', 'Vacant'
-        RENTED = 'RENTED', 'Loué'
-        UNDER_WORK = 'UNDER_WORK', 'En travaux'
-
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='properties', limit_choices_to={'role': User.Role.OWNER})
     category = models.ForeignKey(PropertyCategory, on_delete=models.PROTECT)
     property_type = models.ForeignKey(PropertyType, on_delete=models.PROTECT)
     
     reference = models.CharField(max_length=100, unique=True, verbose_name="Référence unique")
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.VACANT)
+    status = models.CharField(max_length=20, choices=StatutBienEnum.choices, default=StatutBienEnum.VACANT)
     
     # Adresse
     address = models.TextField()

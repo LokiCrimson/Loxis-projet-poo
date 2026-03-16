@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from datetime import date
 import json
-from apps.core.models import AuditLog
+from apps.users.models import User
 from .models import RentPayment, Receipt, Expense, StatutPaiementEnum
 from .selectors import get_debt_for_lease
 
