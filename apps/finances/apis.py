@@ -9,6 +9,7 @@ from .models import RentPayment, Expense
 from .serializers import RentPaymentSerializer, RentPaymentCreateSerializer, ReceiptSerializer, ExpenseSerializer, FinancialSummarySerializer
 from .services import record_rent_payment, record_expense
 from .selectors import get_all_unpaid_payments, get_financial_summary_for_property, get_receipts_for_tenant
+from rest_framework.exceptions import ValidationError
 
 
 class RentPaymentListCreateView(generics.ListCreateAPIView):
@@ -124,7 +125,14 @@ class FinancialReportView(generics.RetrieveAPIView):
         from apps.properties.models import Property
 
         property_id = self.kwargs['property_id']
-        year = self.request.query_params.get('year', date.today().year)
+        year_param = self.request.query_params.get('year')
+        if year_param is None:
+            year = date.today().year
+        else:
+            try:
+                year = int(year_param)
+            except (TypeError, ValueError):
+                raise ValidationError({'year': 'Le paramètre "year" doit être un entier valide.'})
         if getattr(self.request.user, 'role', None) == User.Role.OWNER:
             get_object_or_404(Property, id=property_id, owner=self.request.user)
         return get_financial_summary_for_property(property_id, year)
