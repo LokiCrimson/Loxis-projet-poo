@@ -66,8 +66,8 @@ export default function MonEspacePage() {
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2">
               <div><p className="text-sm text-muted-foreground">Adresse du bien</p><p className="font-medium">{mockBailLocataire.bien_adresse}</p></div>
-              <div><p className="text-sm text-muted-foreground">Loyer mensuel</p><p className="font-medium text-primary">{formatMontant(mockBailLocataire.loyer)}</p></div>
-              <div><p className="text-sm text-muted-foreground">Charges</p><p className="font-medium">{formatMontant(mockBailLocataire.charges)}</p></div>
+              <div><p className="text-sm text-muted-foreground">Loyer mensuel</p><p className="font-medium text-primary">{formatFCFA(mockBailLocataire.loyer)}</p></div>
+              <div><p className="text-sm text-muted-foreground">Charges</p><p className="font-medium">{formatFCFA(mockBailLocataire.charges)}</p></div>
               <div><p className="text-sm text-muted-foreground">Période</p><p className="font-medium">{formatDate(mockBailLocataire.date_debut)} — {formatDate(mockBailLocataire.date_fin)}</p></div>
             </div>
           </CardContent>
