@@ -18,7 +18,7 @@ import { Loader2 } from 'lucide-react';
 const moisLabels = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
 export default function PaiementsPage() {
-  const [mois, setMois] = useState('');
+  const [mois, setMois] = useState('all');
   const [statut, setStatut] = useState('tous');
   const [payModal, setPayModal] = useState<number | null>(null);
   const [montantPaye, setMontantPaye] = useState('');
