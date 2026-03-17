@@ -1,7 +1,14 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from apps.users.models import User
+from apps.core.models import SoftDeleteModel
 
-class PropertyCategory(models.Model):
+class StatutBienEnum(models.TextChoices):
+    VACANT = 'VACANT', _('Vacant')
+    LOUE = 'RENTED', _('Loué')
+    EN_TRAVAUX = 'UNDER_WORK', _('En travaux')
+
+class PropertyCategory(SoftDeleteModel):
     """CU-02 : Gérer les catégories de biens (ex: Appartement, Bureau)"""
     name = models.CharField(max_length=100, unique=True)
     is_active = models.BooleanField(default=True)
@@ -9,7 +16,7 @@ class PropertyCategory(models.Model):
     def __str__(self):
         return self.name
 
-class PropertyType(models.Model):
+class PropertyType(SoftDeleteModel):
     """CU-03 : Gérer les types de biens (ex: Studio, T2)"""
     category = models.ForeignKey(PropertyCategory, on_delete=models.CASCADE, related_name='types')
     name = models.CharField(max_length=100)
@@ -20,19 +27,13 @@ class PropertyType(models.Model):
     def __str__(self):
         return f"{self.name} ({self.category.name})"
 
-class Property(models.Model):
-    """CU-06, CU-08, CU-20 : Gestion des biens"""
-    class Status(models.TextChoices):
-        VACANT = 'VACANT', 'Vacant'
-        RENTED = 'RENTED', 'Loué'
-        UNDER_WORK = 'UNDER_WORK', 'En travaux'
-
+class Property(SoftDeleteModel):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='properties', limit_choices_to={'role': User.Role.OWNER})
     category = models.ForeignKey(PropertyCategory, on_delete=models.PROTECT)
     property_type = models.ForeignKey(PropertyType, on_delete=models.PROTECT)
     
     reference = models.CharField(max_length=100, unique=True, verbose_name="Référence unique")
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.VACANT)
+    status = models.CharField(max_length=20, choices=StatutBienEnum.choices, default=StatutBienEnum.VACANT)
     
     # Adresse
     address = models.TextField()

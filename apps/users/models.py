@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+from apps.core.models import SoftDeleteModel
 
 class User(AbstractUser):
     class Role(models.TextChoices):
@@ -20,7 +21,7 @@ class User(AbstractUser):
         return f"{self.first_name} {self.last_name} ({self.get_role_display()})"
 
 
-class TenantProfile(models.Model):
+class TenantProfile(SoftDeleteModel):
     """CU-13 : Dossier locataire"""
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='tenant_profile')
     first_name = models.CharField(max_length=150)
@@ -38,7 +39,7 @@ class TenantProfile(models.Model):
         return f"Dossier Locataire: {self.first_name} {self.last_name}"
 
 
-class Guarantor(models.Model):
+class Guarantor(SoftDeleteModel):
     """CU-14 : Gérer les garants d'un locataire"""
     tenant = models.ForeignKey(TenantProfile, on_delete=models.CASCADE, related_name='guarantors')
     first_name = models.CharField(max_length=150)
