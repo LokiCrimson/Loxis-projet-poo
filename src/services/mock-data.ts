@@ -6,7 +6,7 @@ export const mockBiens = [
     loyer_hc: 150000, charges: 25000, depot_garantie: 300000,
     statut: 'loue' as const, photo_url: null,
     locataire_actuel: 'Kofi Mensah', bail_debut: '2024-01-01', bail_fin: '2025-12-31',
-    date_creation: '2023-06-15',
+    date_creation: '2023-06-15', proprietaire_id: 2,
   },
   {
     id: 2, reference: 'BIEN-002', categorie: 'Maison', type_bien: 'Villa',
@@ -15,7 +15,7 @@ export const mockBiens = [
     loyer_hc: 350000, charges: 50000, depot_garantie: 700000,
     statut: 'loue' as const, photo_url: null,
     locataire_actuel: 'Ama Djossou', bail_debut: '2024-03-01', bail_fin: '2026-02-28',
-    date_creation: '2023-08-20',
+    date_creation: '2023-08-20', proprietaire_id: 2,
   },
   {
     id: 3, reference: 'BIEN-003', categorie: 'Bureau', type_bien: 'Open Space',
@@ -24,7 +24,7 @@ export const mockBiens = [
     loyer_hc: 200000, charges: 35000, depot_garantie: 400000,
     statut: 'vacant' as const, photo_url: null,
     locataire_actuel: null, bail_debut: null, bail_fin: null,
-    date_creation: '2024-01-10',
+    date_creation: '2024-01-10', proprietaire_id: 10,
   },
   {
     id: 4, reference: 'BIEN-004', categorie: 'Appartement', type_bien: 'Studio',
@@ -33,7 +33,7 @@ export const mockBiens = [
     loyer_hc: 65000, charges: 10000, depot_garantie: 130000,
     statut: 'loue' as const, photo_url: null,
     locataire_actuel: 'Yao Agbeko', bail_debut: '2024-06-01', bail_fin: '2025-05-31',
-    date_creation: '2024-02-15',
+    date_creation: '2024-02-15', proprietaire_id: 10,
   },
   {
     id: 5, reference: 'BIEN-005', categorie: 'Local', type_bien: 'Boutique',
@@ -42,7 +42,7 @@ export const mockBiens = [
     loyer_hc: 120000, charges: 15000, depot_garantie: 240000,
     statut: 'en_travaux' as const, photo_url: null,
     locataire_actuel: null, bail_debut: null, bail_fin: null,
-    date_creation: '2024-04-01',
+    date_creation: '2024-04-01', proprietaire_id: 2,
   },
   {
     id: 6, reference: 'BIEN-006', categorie: 'Appartement', type_bien: 'T2',
@@ -51,7 +51,7 @@ export const mockBiens = [
     loyer_hc: 95000, charges: 15000, depot_garantie: 190000,
     statut: 'loue' as const, photo_url: null,
     locataire_actuel: 'Afi Koudjo', bail_debut: '2024-09-01', bail_fin: '2025-08-31',
-    date_creation: '2024-05-20',
+    date_creation: '2024-05-20', proprietaire_id: 2,
   },
   {
     id: 7, reference: 'BIEN-007', categorie: 'Parking', type_bien: 'Garage',
@@ -60,7 +60,7 @@ export const mockBiens = [
     loyer_hc: 25000, charges: 0, depot_garantie: 50000,
     statut: 'vacant' as const, photo_url: null,
     locataire_actuel: null, bail_debut: null, bail_fin: null,
-    date_creation: '2024-07-01',
+    date_creation: '2024-07-01', proprietaire_id: 10,
   },
   {
     id: 8, reference: 'BIEN-008', categorie: 'Maison', type_bien: 'Duplex',
@@ -69,7 +69,7 @@ export const mockBiens = [
     loyer_hc: 280000, charges: 40000, depot_garantie: 560000,
     statut: 'loue' as const, photo_url: null,
     locataire_actuel: 'Komlan Assignon', bail_debut: '2024-04-01', bail_fin: '2026-03-31',
-    date_creation: '2024-03-10',
+    date_creation: '2024-03-10', proprietaire_id: 10,
   },
   {
     id: 9, reference: 'BIEN-009', categorie: 'Terrain', type_bien: 'Terrain nu',
@@ -78,7 +78,7 @@ export const mockBiens = [
     loyer_hc: 45000, charges: 0, depot_garantie: 90000,
     statut: 'vacant' as const, photo_url: null,
     locataire_actuel: null, bail_debut: null, bail_fin: null,
-    date_creation: '2024-08-15',
+    date_creation: '2024-08-15', proprietaire_id: 2,
   },
 ];
 
