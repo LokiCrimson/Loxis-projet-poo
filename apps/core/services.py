@@ -1,5 +1,6 @@
 from datetime import datetime, time, timedelta
 
+from django.http import Http404
 from django.utils import timezone
 
 from .models import AuditLog, Alert
@@ -97,7 +98,10 @@ def create_alert(
 
 def mark_alert_as_read(*, alert_id: int, user_id: int) -> Alert:
     """Marque une alerte comme lue."""
-    alert = Alert.objects.get(id=alert_id, recipient_id=user_id)
+    try:
+        alert = Alert.objects.get(id=alert_id, recipient_id=user_id)
+    except Alert.DoesNotExist:
+        raise Http404("Alert not found.")
     if not alert.is_read:
         alert.is_read = True
         alert.read_at = timezone.now()
