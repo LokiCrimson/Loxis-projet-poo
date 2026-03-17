@@ -20,6 +20,7 @@ import PaiementsPage from "@/pages/PaiementsPage";
 import QuittancesPage from "@/pages/QuittancesPage";
 import ComptabilitePage from "@/pages/ComptabilitePage";
 import AlertesPage from "@/pages/AlertesPage";
+import ParametresPage from "@/pages/ParametresPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
