@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_spectacular',
-    # 'corsheaders', # Si vous avez un frontend séparé
+    'corsheaders',
 
     # Vos applications
     'apps.core',
@@ -37,6 +37,7 @@ AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',  # Middleware de traduction (doit être après SessionMiddleware et avant CommonMiddleware)
     'django.middleware.common.CommonMiddleware',
@@ -141,3 +142,7 @@ LOCALE_PATHS = [
     BASE_DIR / 'locale',
 ]
 
+
+# Configuration CORS pour le frontend
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True

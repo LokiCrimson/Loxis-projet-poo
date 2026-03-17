@@ -71,17 +71,100 @@ class Disable2FAApi(APIView):
 
 
 class UserListCreateApi(APIView):
+    permission_classes = [permissions.AllowAny]
+
     def get(self, request):
         return Response([])
+
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        first_name = request.data.get('first_name', '')
+        last_name = request.data.get('last_name', '')
+        role = request.data.get('role', 'OWNER')
+
+        if not email or not password:
+            return Response({'detail': 'Email et mot de passe requis.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
+        if User.objects.filter(email=email).exists():
+            return Response({'detail': 'Un utilisateur avec cet email existe déjà.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Handle username constraint
+        username = email
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            role=role
+        )
+        return Response({'id': user.id, 'email': user.email}, status=status.HTTP_201_CREATED)
 
 class UserDetailApi(APIView):
     def get(self, request, user_id):
         return Response({})
 
-class TenantListCreateApi(APIView):
-    def get(self, request):
-        return Response([])
+from rest_framework import generics
+from apps.users.models import TenantProfile
+from apps.users.serializers import TenantProfileSerializer
+
+class TenantListCreateApi(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = TenantProfile.objects.all()
+    serializer_class = TenantProfileSerializer
 
 class GuarantorCreateApi(APIView):
     def post(self, request, tenant_id):
         return Response({})
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status, permissions
+from rest_framework.permissions import IsAuthenticated
+
+class UserMeApi(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            'id': user.id,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'phone': user.phone,
+            'role': user.role,
+            'is_two_factor_enabled': user.is_two_factor_enabled
+        })
+
+    def put(self, request):
+        user = request.user
+        user.first_name = request.data.get('first_name', user.first_name)
+        user.last_name = request.data.get('last_name', user.last_name)
+        user.phone = request.data.get('phone', user.phone)
+        # Note: not updating email directly here to avoid auth trouble
+        user.save()
+        return Response({
+            'id': user.id,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'phone': user.phone,
+            'role': user.role,
+            'is_two_factor_enabled': user.is_two_factor_enabled
+        })
+
+class TenantDetailApi(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = TenantProfile.objects.all()
+    serializer_class = TenantProfileSerializer
+    lookup_url_kwarg = 'tenant_id'
+
+class TenantDetailApi(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = TenantProfile.objects.all()
+    serializer_class = TenantProfileSerializer
+    lookup_url_kwarg = 'tenant_id'

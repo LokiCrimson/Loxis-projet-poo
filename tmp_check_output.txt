@@ -1,0 +1,198 @@
+﻿python : Traceback (most recent 
+call last):
+Au caractère Ligne:1 : 1
++ python manage.py check 2>&1 | 
+Out-File -FilePath 
+tmp_check_output.txt ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          :     
+NotSpecified: (Traceback     (most 
+recent call last):    :String) [], 
+RemoteExcept    ion
+    + FullyQualifiedErrorId :     
+NativeCommandError
+ 
+  File 
+"C:\Users\LENOVO\Desktop\Projet 
+Important\Projet_POO\manage.py", 
+line 20, in <module>
+    main()
+  File 
+"C:\Users\LENOVO\Desktop\Projet 
+Important\Projet_POO\manage.py", 
+line 17, in main
+    
+execute_from_command_line(sys.argv)
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\core\management\__i
+nit__.py", line 442, in 
+execute_from_command_line
+    utility.execute()
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\core\management\__i
+nit__.py", line 436, in execute
+    self.fetch_command(subcommand).r
+un_from_argv(self.argv)
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\core\management\bas
+e.py", line 412, in run_from_argv
+    self.execute(*args, 
+**cmd_options)
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\core\management\bas
+e.py", line 458, in execute
+    output = self.handle(*args, 
+**options)
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\core\management\com
+mands\check.py", line 76, in handle
+    self.check(
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\core\management\bas
+e.py", line 485, in check
+    all_issues = checks.run_checks(
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\core\checks\registr
+y.py", line 88, in run_checks
+    new_errors = 
+check(app_configs=app_configs, 
+databases=databases)
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\core\checks\urls.py
+", line 14, in check_url_config
+    return check_resolver(resolver)
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\core\checks\urls.py
+", line 24, in check_resolver
+    return check_method()
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\urls\resolvers.py",
+ line 494, in check
+    for pattern in 
+self.url_patterns:
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\utils\functional.py
+", line 57, in __get__
+    res = 
+instance.__dict__[self.name] = 
+self.func(instance)
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\urls\resolvers.py",
+ line 715, in url_patterns
+    patterns = 
+getattr(self.urlconf_module, 
+"urlpatterns", self.urlconf_module)
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\utils\functional.py
+", line 57, in __get__
+    res = 
+instance.__dict__[self.name] = 
+self.func(instance)
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\urls\resolvers.py",
+ line 708, in urlconf_module
+    return 
+import_module(self.urlconf_name)
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\impo
+rtlib\__init__.py", line 126, in 
+import_module
+    return _bootstrap._gcd_import(na
+me[level:], package, level)
+  File "<frozen 
+importlib._bootstrap>", line 1050, 
+in _gcd_import
+  File "<frozen 
+importlib._bootstrap>", line 1027, 
+in _find_and_load
+  File "<frozen 
+importlib._bootstrap>", line 1006, 
+in _find_and_load_unlocked
+  File "<frozen 
+importlib._bootstrap>", line 688, 
+in _load_unlocked
+  File "<frozen 
+importlib._bootstrap_external>", 
+line 883, in exec_module
+  File "<frozen 
+importlib._bootstrap>", line 241, 
+in _call_with_frames_removed
+  File 
+"C:\Users\LENOVO\Desktop\Projet Impo
+rtant\Projet_POO\config\urls.py", 
+line 19, in <module>
+    path('api/baux/', 
+include('apps.leases.urls', 
+namespace='leases')),
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\site
+-packages\django\urls\conf.py", 
+line 38, in include
+    urlconf_module = 
+import_module(urlconf_module)
+  File "C:\Users\LENOVO\AppData\Loca
+l\Programs\Python\Python310\lib\impo
+rtlib\__init__.py", line 126, in 
+import_module
+    return _bootstrap._gcd_import(na
+me[level:], package, level)
+  File "<frozen 
+importlib._bootstrap>", line 1050, 
+in _gcd_import
+  File "<frozen 
+importlib._bootstrap>", line 1027, 
+in _find_and_load
+  File "<frozen 
+importlib._bootstrap>", line 1006, 
+in _find_and_load_unlocked
+  File "<frozen 
+importlib._bootstrap>", line 688, 
+in _load_unlocked
+  File "<frozen 
+importlib._bootstrap_external>", 
+line 883, in exec_module
+  File "<frozen 
+importlib._bootstrap>", line 241, 
+in _call_with_frames_removed
+  File 
+"C:\Users\LENOVO\Desktop\Projet Impo
+rtant\Projet_POO\apps\leases\urls.py
+", line 2, in <module>
+    from .apis import 
+LeaseListCreateView, 
+LeaseDetailView, 
+LeaseTerminateView, 
+RentRevisionListCreateView
+  File 
+"C:\Users\LENOVO\Desktop\Projet Impo
+rtant\Projet_POO\apps\leases\apis.py
+", line 7, in <module>
+    from .services import 
+create_lease, terminate_lease, 
+apply_rent_revision
+  File 
+"C:\Users\LENOVO\Desktop\Projet Impo
+rtant\Projet_POO\apps\leases\service
+s.py", line 6, in <module>
+    from apps.properties.models 
+import StatutBienEnum
+ImportError: cannot import name 
+'StatutBienEnum' from 
+'apps.properties.models' 
+(C:\Users\LENOVO\Desktop\Projet Impo
+rtant\Projet_POO\apps\properties\mod
+els.py)

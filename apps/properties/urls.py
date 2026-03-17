@@ -9,6 +9,7 @@ urlpatterns = [
     path('types-biens/', apis.TypeListCreateApi.as_view(), name='liste-creation-type'),
     
     # Gestion des biens immobiliers
+    path('kpis/', apis.PropertyKpisApi.as_view(), name='kpis-biens'),
     path('biens/', apis.PropertyListCreateApi.as_view(), name='liste-creation-bien'),
     path('biens/<int:property_id>/', apis.PropertyDetailApi.as_view(), name='detail-bien'),
     path('biens/<int:property_id>/statut/', apis.PropertyStatusUpdateApi.as_view(), name='mise-a-jour-statut-bien'),

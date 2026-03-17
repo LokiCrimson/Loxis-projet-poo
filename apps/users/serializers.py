@@ -10,7 +10,15 @@ class LoxisTokenObtainPairSerializer(TokenObtainPairSerializer):
     Surcharge du serializer par défaut pour intégrer la vérification du 2FA.
     """
     otp = serializers.CharField(required=False, allow_blank=True, write_only=True)
-    
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        # Ajouter le rôle dans le payload du JWT pour le frontend
+        token['role'] = user.role
+        token['email'] = user.email
+        return token
+
     def validate(self, attrs):
         # On appelle le validate parent pour vérifier le login/mot de passe
         data = super().validate(attrs)
@@ -41,3 +49,17 @@ class TwoFactorSetupSerializer(serializers.Serializer):
 
 class TwoFactorConfirmSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=6, min_length=6, write_only=True)
+
+class TenantProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        from apps.users.models import TenantProfile
+        model = TenantProfile
+        fields = '__all__'
+
+
+class TenantProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        from apps.users.models import TenantProfile
+        model = TenantProfile
+        fields = '__all__'
+
