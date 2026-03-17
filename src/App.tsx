@@ -2,7 +2,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import AppLayout from "@/components/AppLayout";
+import LandingPage from "@/pages/LandingPage";
+import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
+import MonEspacePage from "@/pages/MonEspacePage";
 import Dashboard from "@/pages/Dashboard";
 import BiensPage from "@/pages/BiensPage";
 import BienDetailPage from "@/pages/BienDetailPage";
@@ -27,29 +33,44 @@ const PlaceholderPage = ({ title }: { title: string }) => (
   </div>
 );
 
+const OwnerRoute = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedRoute allowedRoles={['admin', 'proprietaire']}>{children}</ProtectedRoute>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route element={<AppLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/biens" element={<BiensPage />} />
-            <Route path="/biens/:id" element={<BienDetailPage />} />
-            <Route path="/locataires" element={<LocatairesPage />} />
-            <Route path="/locataires/:id" element={<LocataireDetailPage />} />
-            <Route path="/baux" element={<BauxPage />} />
-            <Route path="/baux/:id" element={<BailDetailPage />} />
-            <Route path="/paiements" element={<PaiementsPage />} />
-            <Route path="/quittances" element={<QuittancesPage />} />
-            <Route path="/comptabilite" element={<ComptabilitePage />} />
-            <Route path="/alertes" element={<AlertesPage />} />
-            <Route path="/parametres" element={<PlaceholderPage title="Paramètres" />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+
+            {/* Tenant space */}
+            <Route path="/mon-espace" element={<ProtectedRoute allowedRoles={['locataire']}><MonEspacePage /></ProtectedRoute>} />
+
+            {/* Owner/Admin dashboard */}
+            <Route element={<OwnerRoute><AppLayout /></OwnerRoute>}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/biens" element={<BiensPage />} />
+              <Route path="/biens/:id" element={<BienDetailPage />} />
+              <Route path="/locataires" element={<LocatairesPage />} />
+              <Route path="/locataires/:id" element={<LocataireDetailPage />} />
+              <Route path="/baux" element={<BauxPage />} />
+              <Route path="/baux/:id" element={<BailDetailPage />} />
+              <Route path="/paiements" element={<PaiementsPage />} />
+              <Route path="/quittances" element={<QuittancesPage />} />
+              <Route path="/comptabilite" element={<ComptabilitePage />} />
+              <Route path="/alertes" element={<AlertesPage />} />
+              <Route path="/parametres" element={<PlaceholderPage title="Paramètres" />} />
+            </Route>
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
