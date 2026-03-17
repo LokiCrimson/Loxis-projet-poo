@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/80 backdrop-blur-md border border-white/50 shadow-sm;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+
+  .ai-text {
+    @apply leading-[1.6] text-gray-200;
+  }
+}
+
+@keyframes blob-bounce {
+  0% { transform: scale(1) translate(0px, 0px); opacity: 0.15; }
+  33% { transform: scale(1.1) translate(30px, -30px); opacity: 0.25; }
+  66% { transform: scale(0.95) translate(-20px, 40px); opacity: 0.15; }
+  100% { transform: scale(1) translate(0px, 0px); opacity: 0.15; }
+}
+
+@keyframes aurora-pulse {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.05); }
+}
+
+.animate-blob-bounce {
+  animation: blob-bounce 15s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-aurora {
+  animation: aurora-pulse 6s ease-in-out infinite alternate;
+}
