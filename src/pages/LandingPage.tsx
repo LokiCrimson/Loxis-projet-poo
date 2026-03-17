@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Building2, FileText, Receipt, ArrowRight, CheckCircle, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const features = [
   { icon: Building2, title: 'Gestion des biens', desc: 'Centralisez tous vos biens immobiliers, suivez leur statut et gérez les détails en un clic.' },
@@ -28,6 +29,7 @@ export default function LandingPage() {
             <span className="text-xl font-bold text-primary">LOXIS</span>
           </Link>
           <div className="hidden gap-3 sm:flex">
+            <ThemeToggle />
             <Button variant="outline" asChild><Link to="/login">Se connecter</Link></Button>
             <Button asChild><Link to="/register">S'inscrire</Link></Button>
           </div>
@@ -37,6 +39,9 @@ export default function LandingPage() {
         </div>
         {menuOpen && (
           <div className="flex flex-col gap-2 border-t px-4 py-3 sm:hidden">
+            <div className="flex justify-center py-2">
+              <ThemeToggle />
+            </div>
             <Button variant="outline" asChild className="w-full"><Link to="/login">Se connecter</Link></Button>
             <Button asChild className="w-full"><Link to="/register">S'inscrire</Link></Button>
           </div>

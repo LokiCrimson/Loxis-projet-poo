@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
@@ -129,6 +130,7 @@ export default function AppLayout() {
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input placeholder="Rechercher..." className="w-64 pl-9" />
             </div>
+            <ThemeToggle />
             <button className="relative rounded-lg p-2 hover:bg-muted">
               <Bell className="h-5 w-5 text-muted-foreground" />
               <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground">
