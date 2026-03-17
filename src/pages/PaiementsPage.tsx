@@ -26,7 +26,7 @@ export default function PaiementsPage() {
   const { toast } = useToast();
 
   const params: Record<string, string> = {};
-  if (mois) params.mois = mois;
+  if (mois && mois !== 'all') params.mois = mois;
   params.annee = '2026';
   if (statut !== 'tous') params.statut = statut;
 
