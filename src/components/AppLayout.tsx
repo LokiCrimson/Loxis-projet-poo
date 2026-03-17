@@ -109,7 +109,7 @@ export default function AppLayout() {
               <p className="truncate text-sm font-medium text-sidebar-active">{user.prenom} {user.nom}</p>
               <p className="truncate text-xs text-sidebar-foreground capitalize">{user.role}</p>
             </div>
-            <button className="text-sidebar-foreground hover:text-sidebar-active">
+            <button onClick={handleLogout} className="text-sidebar-foreground hover:text-sidebar-active">
               <LogOut className="h-4 w-4" />
             </button>
           </div>
