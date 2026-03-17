@@ -51,4 +51,5 @@ class LeaseTerminateSerializer(serializers.Serializer):
 class RentRevisionSerializer(serializers.ModelSerializer):
     class Meta:
         model = RentRevision
-        fields = '__all__'
+        fields = ['id', 'date_revision', 'ancien_loyer', 'nouveau_loyer', 'motif', 'appliquee', 'bail', 'cree_par']
+        read_only_fields = ['id', 'ancien_loyer', 'bail', 'cree_par']

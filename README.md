@@ -2,6 +2,16 @@
 
 Ce projet implemente une solution de gestion immobiliere. L'architecture est modulaire (Domain-Driven Design) ou chaque domaine metier possede sa propre application Django dans le dossier `apps/`.
 
+## Mise a jour rapide (17/03/2026)
+
+- Core renforce : journal d'audit enrichi (severite, source, request id), alertes actionnables (priorite, URL d'action, metadata), scan operationnel, endpoints de marquage lu et marquage global.
+- Leases corrige : services fiabilises (creation/resiliation/revision), audit via `core.services.log_audit`, filtrage role owner/tenant, routes root `/api/baux/...` + aliases legacy.
+- Finances corrige : calcul des dettes (impaye + partiel), resume financier annuel, securite d'acces owner, journalisation et alertes impayes, correction generation PDF quittance.
+- Tests ajoutes : couverture metier leases/finances + permissions API (6 tests OK).
+- Nouvelle app `view3d` implementee : scene 3D liee au bien, publication/depublication, journal de visionnage, permissions admin/owner/tenant (bail actif requis), audit automatique, endpoints dedies.
+- Tests `view3d` : 7 tests OK (creation, permissions, publication, journalisation).
+- Migrations appliquees : `core`, `view3d`, plus alignement `BigAutoField` sur `users` et `properties`.
+
 ---
 
 ## Prerequis
@@ -87,26 +97,26 @@ Les permissions basees sur les roles sont definies dans `common/permissions.py`.
 ### 3. `apps/leases/` - Gestion locative et baux
 
 - **Entites** : BAIL, REVISION DE LOYER
-- **Logique** : Validation du chevauchement des dates des baux.
+- **Logique** : Validation du chevauchement des dates des baux, creation/resiliation/revision avec audit.
 - **Routes API** :
-- `POST/GET /finances/paiements/ `- Lister ou créer un paiement de loyer
-- `GET/PUT /finances/paiements/<id>/ `- Détail ou modification d’un paiement
-- `GET /finances/paiements/<id>/quittance/ `- Télécharger la quittance de paiement
-- `POST /finances/paiements/<id>/renvoyer/ `- Renvoyer la quittance au locataire
-- `GET /finances/impayes/` - Lister les loyers impayés
-- `POST/GET /finances/depenses/` - Lister ou créer une dépense
-- `GET /finances/rapport/<property_id>/` - Générer le rapport financier d’un bien
-- `GET /finances/export/` - Exporter les données financières (CSV, Excel, etc.)
+- `POST/GET /api/baux/` - Lister ou creer un bail
+- `GET/PUT /api/baux/<id>/` - Detail ou modification d'un bail
+- `POST /api/baux/<id>/resilier/` - Resilier un bail
+- `POST/GET /api/baux/<lease_id>/revisions/` - Lister ou creer une revision de loyer
 
 ### 4. `apps/finances/` - Comptabilite et transactions
 
 - **Entites** : PAIEMENT DE LOYER, QUITTANCE, CATEGORIE DE DEPENSE, DEPENSE
-- **Logique** : Suivi des impayes, generation automatique des quittances, suivi des charges.
+- **Logique** : Suivi des impayes, generation automatique des quittances, suivi des charges, resume financier annuel.
 - **Routes API** :
-- `POST/GET /api/baux/` - Lister ou créer un bail
-- `GET/PUT /api/baux/<id>/` - Détail ou modification d’un bail
-- `POST /api/baux/<id>/resilier/` - Résilier un bail
-- `POST/GET /api/baux/<lease_id>/revisions/` - Lister ou créer une révision de loyer pour un bail
+- `POST/GET /api/finances/paiements/` - Lister ou creer un paiement de loyer
+- `GET /api/finances/paiements/<id>/` - Detail d'un paiement
+- `GET /api/finances/paiements/<id>/quittance/` - Telecharger la quittance de paiement
+- `POST /api/finances/paiements/<id>/renvoyer/` - Renvoyer la quittance au locataire
+- `GET /api/finances/impayes/` - Lister les loyers impayes
+- `POST/GET /api/finances/depenses/` - Lister ou creer une depense
+- `GET /api/finances/rapport/<property_id>/` - Generer le rapport financier d'un bien
+- `GET /api/finances/export/` - Exporter les donnees financieres
 
 ### 5. `apps/core/` - Elements transverses et systeme
 
@@ -116,6 +126,20 @@ Les permissions basees sur les roles sont definies dans `common/permissions.py`.
   - `GET /api/systeme/journal-audit/` - Consulter le journal d'audit
   - `GET /api/systeme/alertes/` - Lister les alertes
   - `POST /api/systeme/alertes/<id>/marquer-lu/` - Marquer une alerte comme lue
+  - `POST /api/systeme/alertes/marquer-tout-lu/` - Marquer toutes les alertes comme lues
+  - `POST /api/systeme/alertes/scan-operationnel/` - Lancer le scan d'alertes metier
+
+### 6. `apps/view3d/` - Visionnage 3D des biens
+
+- **Entites** : `Scene3D`, `SceneViewLog`
+- **Logique** : upload scene 3D, publication/depublication, controle d'acces par role et bail actif, journalisation des visionnages.
+- **Routes API** :
+  - `GET/POST /api/visites-3d/` - Lister ou creer une scene 3D
+  - `GET /api/visites-3d/<id>/` - Consulter une scene 3D
+  - `POST /api/visites-3d/<id>/publier/` - Publier une scene
+  - `POST /api/visites-3d/<id>/depublier/` - Depublier une scene
+  - `POST /api/visites-3d/<id>/journaliser-visionnage/` - Journaliser une consultation
+  - `GET /api/visites-3d/health/` - Healthcheck de l'app
 
 ---
 

@@ -18,6 +18,7 @@ urlpatterns = [
     path('api/immobilier/', include('apps.properties.urls', namespace='properties')),
     path('api/baux/', include('apps.leases.urls', namespace='leases')),
     path('api/finances/', include('apps.finances.urls', namespace='finances')),
+    path('api/visites-3d/', include('apps.view3d.urls', namespace='view3d')),
 ]
 
 # Permet à Django de servir les fichiers médias (images/photos) en mode développement

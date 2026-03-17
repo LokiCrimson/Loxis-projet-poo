@@ -1,8 +1,9 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from common.permissions import IsAdminRole, IsOwnerRole, IsTenantRole
-from .models import Lease, RentRevision
+from common.permissions import IsAdminRole, IsOwnerRole
+from apps.users.models import User
+from .models import Lease, RentRevision, StatutBailEnum
 from .serializers import LeaseSerializer, LeaseCreateSerializer, LeaseTerminateSerializer, RentRevisionSerializer
 from .services import create_lease, terminate_lease, apply_rent_revision
 
@@ -17,10 +18,13 @@ class LeaseListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if hasattr(user, 'role') and user.role == 'locataire':
-            return Lease.objects.filter(locataire__user=user, statut='actif')
-        # For admin/owner, filter by query params
-        qs = Lease.objects.all()
+        qs = Lease.objects.select_related('bien', 'locataire').all()
+
+        if getattr(user, 'role', None) == User.Role.TENANT:
+            qs = qs.filter(locataire__user=user)
+        elif getattr(user, 'role', None) == User.Role.OWNER:
+            qs = qs.filter(bien__owner=user)
+
         if self.request.query_params.get('bien_id'):
             qs = qs.filter(bien_id=self.request.query_params['bien_id'])
         if self.request.query_params.get('locataire_id'):
@@ -29,14 +33,17 @@ class LeaseListCreateView(generics.ListCreateAPIView):
             qs = qs.filter(statut=self.request.query_params['statut'])
         return qs
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        create_lease(
+        lease = create_lease(
             bien_id=self.request.data['bien_id'],
             locataire_id=self.request.data['locataire_id'],
             data=data,
             created_by=self.request.user
         )
+        return Response(LeaseSerializer(lease).data, status=status.HTTP_201_CREATED)
 
 
 class LeaseDetailView(generics.RetrieveUpdateAPIView):
@@ -45,8 +52,10 @@ class LeaseDetailView(generics.RetrieveUpdateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if hasattr(user, 'role') and user.role == 'locataire':
+        if getattr(user, 'role', None) == User.Role.TENANT:
             return Lease.objects.filter(locataire__user=user)
+        if getattr(user, 'role', None) == User.Role.OWNER:
+            return Lease.objects.filter(bien__owner=user)
         return Lease.objects.all()
 
 
@@ -62,7 +71,13 @@ class LeaseTerminateView(generics.GenericAPIView):
             data=serializer.validated_data,
             terminated_by=request.user
         )
-        return Response(result, status=status.HTTP_200_OK)
+        return Response(
+            {
+                'bail': LeaseSerializer(result['bail']).data,
+                'avertissement_impayes': result['avertissement_impayes'],
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class RentRevisionListCreateView(generics.ListCreateAPIView):
@@ -70,7 +85,12 @@ class RentRevisionListCreateView(generics.ListCreateAPIView):
     serializer_class = RentRevisionSerializer
 
     def get_queryset(self):
-        return RentRevision.objects.filter(bail_id=self.kwargs['lease_pk'])
+        queryset = RentRevision.objects.filter(bail_id=self.kwargs['lease_pk'])
+        if getattr(self.request.user, 'role', None) == User.Role.OWNER:
+            queryset = queryset.filter(bail__bien__owner=self.request.user)
+        if getattr(self.request.user, 'role', None) == User.Role.TENANT:
+            queryset = queryset.filter(bail__locataire__user=self.request.user)
+        return queryset
 
     def perform_create(self, serializer):
         apply_rent_revision(

@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'apps.properties',
     'apps.finances',
     'apps.leases',
+    'apps.view3d',
 ]
 
 # Définition du modèle utilisateur personnalisé primordial dès le début du projet !

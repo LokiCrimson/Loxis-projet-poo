@@ -112,7 +112,7 @@ class Receipt(models.Model):
         p.setFont("Helvetica", 12)
         p.drawString(100, height - 80, f"Numéro: {self.numero}")
         p.drawString(100, height - 100, f"Locataire: {self.paiement_loyer.bail.locataire.user.get_full_name()}")
-        p.drawString(100, height - 120, f"Bien: {self.paiement_loyer.bail.bien.nom}")
+        p.drawString(100, height - 120, f"Bien: {self.paiement_loyer.bail.bien.reference}")
         p.drawString(100, height - 140, f"Période: {self.paiement_loyer.periode_mois}/{self.paiement_loyer.periode_annee}")
         p.drawString(100, height - 160, f"Montant Loyer: {self.montant_loyer} €")
         p.drawString(100, height - 180, f"Montant Charges: {self.montant_charges} €")
