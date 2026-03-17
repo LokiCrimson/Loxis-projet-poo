@@ -56,20 +56,32 @@ class RentPayment(models.Model):
         if self.reste_a_payer > 0:
             next_month = self.periode_mois % 12 + 1
             next_year = self.periode_annee + (1 if self.periode_mois == 12 else 0)
-            # Create new RentPayment for next month with remaining amount
-            RentPayment.objects.create(
+            # Update or create RentPayment for next month with remaining amount
+            next_payment, created = RentPayment.objects.get_or_create(
                 bail=self.bail,
-                enregistre_par=self.enregistre_par,
                 periode_mois=next_month,
                 periode_annee=next_year,
-                montant_attendu=self.reste_a_payer,
-                montant_paye=0,
-                reste_a_payer=self.reste_a_payer,
-                statut=StatutPaiementEnum.EN_ATTENTE,
-                date_paiement=self.date_paiement,
-                moyen=self.moyen,
-                commentaire=f"Report de dette depuis {self.periode_mois}/{self.periode_annee}"
+                defaults={
+                    "enregistre_par": self.enregistre_par,
+                    "montant_attendu": self.reste_a_payer,
+                    "montant_paye": 0,
+                    "date_paiement": self.date_paiement,
+                    "moyen": self.moyen,
+                    "commentaire": f"Report de dette depuis {self.periode_mois}/{self.periode_annee}",
+                },
             )
+            if not created:
+                # Increment the expected amount with the remaining debt
+                next_payment.montant_attendu += self.reste_a_payer
+                # Preserve or update the comment to trace the carry-over
+                additional_comment = f" | Report de dette depuis {self.periode_mois}/{self.periode_annee}"
+                if next_payment.commentaire:
+                    if additional_comment not in next_payment.commentaire:
+                        next_payment.commentaire += additional_comment
+                else:
+                    next_payment.commentaire = additional_comment
+            # Recalculate status and remaining amount consistently
+            next_payment.save()
 
     class Meta:
         unique_together = ('bail', 'periode_mois', 'periode_annee')

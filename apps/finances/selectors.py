@@ -14,13 +14,13 @@ def get_payment_history_for_lease(lease_id: int):
     return RentPayment.objects.filter(bail_id=lease_id).order_by('periode_annee', 'periode_mois')
 
 
-def get_debt_for_lease(lease_id: int) -> float:
-    """Somme totale des reste_a_payer sur ce bail."""
+def get_debt_for_lease(lease_id: int) -> Decimal:
+    """Somme totale des reste_a_payer sur ce bail, retournée en Decimal."""
     result = RentPayment.objects.filter(
         bail_id=lease_id,
         statut__in=[StatutPaiementEnum.PARTIEL, StatutPaiementEnum.IMPAYE],
     ).aggregate(total=Sum('reste_a_payer'))
-    return result['total'] or 0
+    return result['total'] or Decimal('0')
 
 
 def get_financial_summary_for_property(property_id: int, year: int) -> dict:

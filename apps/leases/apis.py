@@ -38,8 +38,8 @@ class LeaseListCreateView(generics.ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         lease = create_lease(
-            bien_id=self.request.data['bien_id'],
-            locataire_id=self.request.data['locataire_id'],
+            bien_id=data['bien_id'],
+            locataire_id=data['locataire_id'],
             data=data,
             created_by=self.request.user
         )
@@ -93,8 +93,9 @@ class RentRevisionListCreateView(generics.ListCreateAPIView):
         return queryset
 
     def perform_create(self, serializer):
-        apply_rent_revision(
+        revision = apply_rent_revision(
             lease_id=self.kwargs['lease_pk'],
             data=serializer.validated_data,
             revised_by=self.request.user
         )
+        serializer.instance = revision

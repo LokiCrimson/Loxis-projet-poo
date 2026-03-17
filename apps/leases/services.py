@@ -35,11 +35,13 @@ def create_lease(*, bien_id: int, locataire_id: int, data: dict, created_by: Use
         if get_active_lease_for_tenant(locataire_id):
             raise ValidationError("Le locataire a déjà un bail actif.")
 
-        lease = Lease.objects.create(
+        lease = Lease(
             bien_id=bien_id,
             locataire_id=locataire_id,
             **data
         )
+        lease.full_clean()
+        lease.save()
 
         bien.status = StatutBienEnum.LOUE
         bien.save(update_fields=['status'])

@@ -33,7 +33,7 @@ class RentPaymentListCreateView(generics.ListCreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         payment = record_rent_payment(
-            lease_id=self.request.data['bail_id'],
+            lease_id=serializer.validated_data['bail_id'],
             data=serializer.validated_data,
             recorded_by=self.request.user
         )
@@ -77,6 +77,11 @@ class ResendReceiptView(generics.GenericAPIView):
         payment = get_object_or_404(RentPayment, id=pk)
         if getattr(request.user, 'role', None) == User.Role.OWNER and payment.bail.bien.owner_id != request.user.id:
             return Response(status=403)
+        if not hasattr(payment, 'receipt') or payment.receipt is None:
+            return Response(
+                {'detail': 'Aucune quittance disponible pour ce paiement.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
         payment.receipt.envoyer_email()
         return Response({'message': 'Quittance renvoyée'})
 
