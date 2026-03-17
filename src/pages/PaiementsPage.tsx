@@ -57,7 +57,7 @@ export default function PaiementsPage() {
         <Select value={mois} onValueChange={setMois}>
           <SelectTrigger className="w-40"><SelectValue placeholder="Tous les mois" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Tous les mois</SelectItem>
+            <SelectItem value="all">Tous les mois</SelectItem>
             {Array.from({ length: 12 }, (_, i) => (
               <SelectItem key={i + 1} value={(i + 1).toString()}>{moisLabels[i + 1]}</SelectItem>
             ))}
