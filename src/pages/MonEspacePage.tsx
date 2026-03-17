@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusBadge } from '@/components/StatusBadge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { formatMontant, formatDate } from '@/lib/format';
+import { formatFCFA, formatDate } from '@/lib/format';
 
 const mockBailLocataire = {
   bien_adresse: '15 Rue du Commerce, Lomé',
