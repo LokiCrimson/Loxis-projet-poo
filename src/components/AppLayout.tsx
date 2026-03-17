@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation, Outlet } from 'react-router-dom';
+import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Building2, Users, FileText, CreditCard,
   Receipt, BarChart3, Bell, Settings, LogOut, Menu, X, Search, Home
@@ -7,7 +7,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { mockCurrentUser } from '@/services/mock-data';
+import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
@@ -37,8 +37,16 @@ function getPageTitle(pathname: string): string {
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const pageTitle = getPageTitle(location.pathname);
-  const user = mockCurrentUser;
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  if (!user) return null;
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -101,7 +109,7 @@ export default function AppLayout() {
               <p className="truncate text-sm font-medium text-sidebar-active">{user.prenom} {user.nom}</p>
               <p className="truncate text-xs text-sidebar-foreground capitalize">{user.role}</p>
             </div>
-            <button className="text-sidebar-foreground hover:text-sidebar-active">
+            <button onClick={handleLogout} className="text-sidebar-foreground hover:text-sidebar-active">
               <LogOut className="h-4 w-4" />
             </button>
           </div>

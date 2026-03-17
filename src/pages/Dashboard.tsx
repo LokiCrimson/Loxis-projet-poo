@@ -1,11 +1,11 @@
-import { Building2, FileText, TrendingUp, AlertCircle, AlertTriangle, Clock, RefreshCw, Plus } from 'lucide-react';
+import { Building2, FileText, TrendingUp, AlertCircle, AlertTriangle, Clock, RefreshCw, Plus, Shield, Users } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/PageHeader';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
-import { StatusBadge } from '@/components/StatusBadge';
 import { useDashboardStats, useRevenueChart, useAlertes, useBienStatuts } from '@/hooks/use-dashboard';
+import { useAuth } from '@/contexts/AuthContext';
 import { formatFCFA, formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
@@ -18,10 +18,17 @@ const alertConfig = {
 };
 
 export default function Dashboard() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
   const { data: chart, isLoading: chartLoading } = useRevenueChart();
   const { data: alertes, isLoading: alertesLoading } = useAlertes();
   const { data: statuts, isLoading: statutsLoading } = useBienStatuts();
+
+  const subtitle = isAdmin
+    ? 'Vue globale de la plateforme — tous les propriétaires'
+    : `Bienvenue ${user?.prenom}, voici votre patrimoine`;
 
   const kpis = stats ? [
     { label: 'Total Biens', value: stats.total_biens, icon: Building2, color: 'bg-secondary/10 text-secondary', trend: null },
@@ -39,7 +46,46 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Dashboard" subtitle="Vue d'ensemble de votre patrimoine" />
+      <div className="flex items-center justify-between">
+        <PageHeader
+          title={isAdmin ? 'Dashboard Administrateur' : 'Mon Dashboard'}
+          subtitle={subtitle}
+        />
+        {isAdmin && (
+          <div className="flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-1.5">
+            <Shield className="h-4 w-4 text-primary" />
+            <span className="text-xs font-semibold text-primary">Admin</span>
+          </div>
+        )}
+      </div>
+
+      {/* Admin-only: Platform overview */}
+      {isAdmin && (
+        <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Users className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-semibold text-primary">Vue plateforme</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div>
+              <p className="text-2xl font-bold text-foreground">3</p>
+              <p className="text-xs text-muted-foreground">Propriétaires</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-foreground">5</p>
+              <p className="text-xs text-muted-foreground">Locataires actifs</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-foreground">9</p>
+              <p className="text-xs text-muted-foreground">Biens totaux</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-success">98%</p>
+              <p className="text-xs text-muted-foreground">Taux de recouvrement</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -65,7 +111,9 @@ export default function Dashboard() {
 
       {/* Revenue Chart */}
       <div className="rounded-xl bg-card p-6 shadow-sm">
-        <h3 className="section-title mb-4">Revenus des 12 derniers mois</h3>
+        <h3 className="section-title mb-4">
+          {isAdmin ? 'Revenus globaux des 12 derniers mois' : 'Mes revenus des 12 derniers mois'}
+        </h3>
         {chartLoading ? (
           <LoadingSkeleton lines={6} />
         ) : (
@@ -89,7 +137,7 @@ export default function Dashboard() {
         <div className="rounded-xl bg-card p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h3 className="section-title">Alertes à traiter</h3>
+              <h3 className="section-title">{isAdmin ? 'Toutes les alertes' : 'Mes alertes'}</h3>
               <span className="flex h-5 items-center rounded-full bg-destructive/10 px-2 text-xs font-semibold text-destructive">
                 {alertes?.filter(a => !a.lu).length || 0}
               </span>
@@ -97,9 +145,9 @@ export default function Dashboard() {
           </div>
           {alertesLoading ? (
             <LoadingSkeleton lines={5} />
-          ) : (
+          ) : alertes && alertes.length > 0 ? (
             <div className="space-y-3">
-              {alertes?.slice(0, 5).map(alerte => {
+              {alertes.slice(0, 5).map(alerte => {
                 const config = alertConfig[alerte.type];
                 return (
                   <div key={alerte.id} className={cn('flex items-start gap-3 rounded-lg border-l-4 bg-muted/30 p-3', config.border)}>
@@ -118,12 +166,14 @@ export default function Dashboard() {
                 Voir toutes les alertes
               </Link>
             </div>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-4">Aucune alerte pour le moment</p>
           )}
         </div>
 
         {/* Donut */}
         <div className="rounded-xl bg-card p-6 shadow-sm">
-          <h3 className="section-title mb-4">Biens par statut</h3>
+          <h3 className="section-title mb-4">{isAdmin ? 'Tous les biens par statut' : 'Mes biens par statut'}</h3>
           {statutsLoading ? (
             <LoadingSkeleton lines={4} />
           ) : (
@@ -146,7 +196,7 @@ export default function Dashboard() {
               </ResponsiveContainer>
               <div className="mt-2 text-center">
                 <p className="text-2xl font-bold">{totalBiens}</p>
-                <p className="text-xs text-muted-foreground">biens au total</p>
+                <p className="text-xs text-muted-foreground">{isAdmin ? 'biens sur la plateforme' : 'biens dans mon patrimoine'}</p>
               </div>
               <div className="mt-4 flex gap-6">
                 {donutData.map((d, i) => (
