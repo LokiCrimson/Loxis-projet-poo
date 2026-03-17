@@ -85,7 +85,7 @@ export default function MonEspacePage() {
                     {p.date && <p className="text-xs text-muted-foreground">Payé le {formatDate(p.date)}</p>}
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="font-medium">{formatMontant(p.montant)}</span>
+                    <span className="font-medium">{formatFCFA(p.montant)}</span>
                     <StatusBadge status={p.statut as any} />
                   </div>
                 </div>
