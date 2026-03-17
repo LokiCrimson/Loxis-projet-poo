@@ -18,7 +18,7 @@ import { Loader2 } from 'lucide-react';
 const moisLabels = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
 export default function PaiementsPage() {
-  const [mois, setMois] = useState('');
+  const [mois, setMois] = useState('all');
   const [statut, setStatut] = useState('tous');
   const [payModal, setPayModal] = useState<number | null>(null);
   const [montantPaye, setMontantPaye] = useState('');
@@ -26,7 +26,7 @@ export default function PaiementsPage() {
   const { toast } = useToast();
 
   const params: Record<string, string> = {};
-  if (mois) params.mois = mois;
+  if (mois && mois !== 'all') params.mois = mois;
   params.annee = '2026';
   if (statut !== 'tous') params.statut = statut;
 
@@ -57,7 +57,7 @@ export default function PaiementsPage() {
         <Select value={mois} onValueChange={setMois}>
           <SelectTrigger className="w-40"><SelectValue placeholder="Tous les mois" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Tous les mois</SelectItem>
+            <SelectItem value="all">Tous les mois</SelectItem>
             {Array.from({ length: 12 }, (_, i) => (
               <SelectItem key={i + 1} value={(i + 1).toString()}>{moisLabels[i + 1]}</SelectItem>
             ))}

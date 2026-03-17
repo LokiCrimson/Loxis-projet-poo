@@ -20,6 +20,7 @@ import PaiementsPage from "@/pages/PaiementsPage";
 import QuittancesPage from "@/pages/QuittancesPage";
 import ComptabilitePage from "@/pages/ComptabilitePage";
 import AlertesPage from "@/pages/AlertesPage";
+import ParametresPage from "@/pages/ParametresPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -65,7 +66,7 @@ const App = () => (
               <Route path="/quittances" element={<QuittancesPage />} />
               <Route path="/comptabilite" element={<ComptabilitePage />} />
               <Route path="/alertes" element={<AlertesPage />} />
-              <Route path="/parametres" element={<PlaceholderPage title="Paramètres" />} />
+              <Route path="/parametres" element={<ParametresPage />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
