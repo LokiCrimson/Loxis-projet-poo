@@ -13,6 +13,10 @@ class User(AbstractUser):
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Téléphone")
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.TENANT)
     
+    # 2FA (Google Authenticator)
+    two_factor_secret = models.CharField(max_length=32, blank=True, null=True)
+    is_two_factor_enabled = models.BooleanField(default=False)
+
     # On utilise l'email comme identifiant principal plutôt que le username
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']

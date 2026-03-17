@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from .models import Property, PropertyPhoto
+from .models import Property, PropertyPhoto, PropertyFurniture
 
 class CategoryListCreateApi(APIView):
     def get(self, request):
@@ -56,7 +56,58 @@ class PropertyPhotoListCreateApi(APIView):
             PropertyPhoto.objects.filter(property=property_obj).exclude(id=photo.id).update(is_main=False)
 
         return Response({
-            "message": "Photo uploadée avec succès", 
+            "message": "Photo uploadée avec succès",
             "photo_id": photo.id,
             "url": photo.image.url
         }, status=status.HTTP_201_CREATED)
+
+class PropertyFurnitureListCreateApi(APIView):
+    """
+    Module Meubles : Liste et ajout de meubles/objets pour une propriété
+    """
+    def get(self, request, property_id):
+        property_obj = get_object_or_404(Property, id=property_id)
+        furnitures = PropertyFurniture.objects.filter(property=property_obj)
+        data = [
+            {
+                "id": f.id,
+                "name": f.name,
+                "description": f.description,
+                "condition": f.condition,
+                "quantity": f.quantity
+            } for f in furnitures
+        ]
+        return Response(data, status=status.HTTP_200_OK)
+
+    def post(self, request, property_id):
+        property_obj = get_object_or_404(Property, id=property_id)
+        
+        name = request.data.get('name')
+        if not name:
+            return Response({"error": "Le nom du meuble est requis."}, status=status.HTTP_400_BAD_REQUEST)
+
+        furniture = PropertyFurniture.objects.create(
+            property=property_obj,
+            name=name,
+            description=request.data.get('description', ''),
+            condition=request.data.get('condition', 'BON_ETAT'),
+            quantity=int(request.data.get('quantity', 1))
+        )
+
+        return Response({
+            "id": furniture.id,
+            "name": furniture.name,
+            "description": furniture.description,
+            "condition": furniture.condition,
+            "quantity": furniture.quantity
+        }, status=status.HTTP_201_CREATED)
+
+class PropertyFurnitureDetailApi(APIView):
+    """
+    Module Meubles : Modification ou suppression d'un meuble spécifique
+    """
+    def delete(self, request, property_id, furniture_id):
+        furniture = get_object_or_404(PropertyFurniture, id=furniture_id, property_id=property_id)
+        furniture.delete()
+        return Response({"message": "Meuble supprimé."}, status=status.HTTP_204_NO_CONTENT)
+

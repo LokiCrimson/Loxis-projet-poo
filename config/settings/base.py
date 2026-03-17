@@ -10,6 +10,7 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,6 +38,7 @@ AUTH_USER_MODEL = 'users.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # Middleware de traduction (doit être après SessionMiddleware et avant CommonMiddleware)
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -119,3 +121,23 @@ SPECTACULAR_SETTINGS = {
 }
 
 # (Laissez les autres configurations par défaut : MIDDLEWARE, DATABASES, etc.)
+# --- INTERNATIONALIZATION (I18N) ---
+from django.utils.translation import gettext_lazy as _
+
+LANGUAGE_CODE = 'fr'
+
+LANGUAGES = [
+    ('fr', _('Français')),
+    ('en', _('English')),
+]
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
+

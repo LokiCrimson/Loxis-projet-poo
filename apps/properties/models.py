@@ -65,3 +65,20 @@ class PropertyPhoto(models.Model):
 
     def __str__(self):
         return f"Photo de {self.property.reference}"
+
+class FurnitureConditionEnum(models.TextChoices):
+    NEUF = 'NEUF', _('Neuf')
+    BON_ETAT = 'BON_ETAT', _('Bon état')
+    USE = 'USE', _('Usagé')
+    MAUVAIS_ETAT = 'MAUVAIS_ETAT', _('Mauvais état')
+
+class PropertyFurniture(SoftDeleteModel):
+    """Module de gestion des meubles pour un bien immobilier"""
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='furnitures')
+    name = models.CharField(max_length=150, verbose_name="Nom du meuble/objet")
+    description = models.TextField(blank=True, verbose_name="Description détaillée")
+    condition = models.CharField(max_length=20, choices=FurnitureConditionEnum.choices, default=FurnitureConditionEnum.BON_ETAT)
+    quantity = models.PositiveIntegerField(default=1, verbose_name="Quantité")
+
+    def __str__(self):
+        return f"{self.quantity} x {self.name} - {self.property.reference}"

@@ -1,8 +1,56 @@
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password
+import pyotp
+import qrcode
+import qrcode.image.svg
+from io import BytesIO
+import base64
+
 from .models import User, TenantProfile, Guarantor
 from apps.core.services import log_audit  # On supposera qu'on l'importe de core
+
+def generate_2fa_secret(user: User) -> str:
+    """Génère un secret 2FA pour l'utilisateur s'il n'en a pas déjà un."""
+    if not user.two_factor_secret:
+        user.two_factor_secret = pyotp.random_base32()
+        user.save(update_fields=['two_factor_secret'])
+    
+    totp = pyotp.TOTP(user.two_factor_secret)
+    # Le nom de l'application est Loxis
+    provisioning_uri = totp.provisioning_uri(name=user.email, issuer_name="Loxis")
+    
+    # Génération du QR Code
+    qr = qrcode.make(provisioning_uri)
+    buf = BytesIO()
+    qr.save(buf)
+    qr_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+    
+    return {
+        "secret": user.two_factor_secret,
+        "qr_code": f"data:image/png;base64,{qr_base64}",
+        "uri": provisioning_uri
+    }
+
+def verify_and_enable_2fa(user: User, token: str) -> bool:
+    """Vérifie le token OTP et active le 2FA si c'est correct."""
+    if not user.two_factor_secret:
+        raise ValidationError("Le secret 2FA n'est pas généré pour cet utilisateur.")
+        
+    totp = pyotp.TOTP(user.two_factor_secret)
+    if totp.verify(token):
+        user.is_two_factor_enabled = True
+        user.save(update_fields=['is_two_factor_enabled'])
+        return True
+    return False
+
+def verify_2fa_token(user: User, token: str) -> bool:
+    """Vérifie simplement un token OTP lors de la connexion."""
+    if not user.is_two_factor_enabled or not user.two_factor_secret:
+        return False
+        
+    totp = pyotp.TOTP(user.two_factor_secret)
+    return totp.verify(token)
 
 @transaction.atomic
 def create_user(*, email: str, role: str, actor: User, **extra_fields) -> User:

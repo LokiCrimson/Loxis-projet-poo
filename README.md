@@ -276,3 +276,18 @@ L'architecture actuelle modulaire (Domain-Driven Design) assure la scalabilité 
 
 3. **Couverture de tests unitaires et d'intégration :**
    - Utilisation de `pytest` et `pytest-django` sur la couche des services pour sécuriser les sous-routines critiques à risques financiers (génération de quittances, calcul de dette en report, encaissement de loyer, refacturations).
+
+
+## Mises à Jour et Ajouts Récents
+
+### 1. Authentification à Double Facteur (2FA)
+- Intégration de Google Authenticator (via pyotp et qrcode).
+- Sécurisation renforcée de la connexion utilisateur et des données métiers.
+
+### 2. Module de Gestion des Meubles et Équipements
+- Suivi de l'inventaire des biens loués.
+- Ajout, modification, et suivi de l'état (Neuf, Usagé, etc.) du mobilier de chaque propriété.
+
+### 3. Internationalisation et Traduction (i18n)
+- Support bilingue Français/Anglais pour toute l'API.
+- Traduction dynamique du contenu en base de données avec django-modeltranslation.

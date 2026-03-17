@@ -13,4 +13,8 @@ urlpatterns = [
     path('biens/<int:property_id>/', apis.PropertyDetailApi.as_view(), name='detail-bien'),
     path('biens/<int:property_id>/statut/', apis.PropertyStatusUpdateApi.as_view(), name='mise-a-jour-statut-bien'),
     path('biens/<int:property_id>/photos/', apis.PropertyPhotoListCreateApi.as_view(), name='gestion-photos-bien'),
+    
+    # Gestion des meubles et équipements
+    path('biens/<int:property_id>/meubles/', apis.PropertyFurnitureListCreateApi.as_view(), name='gestion-meubles-bien'),
+    path('biens/<int:property_id>/meubles/<int:furniture_id>/', apis.PropertyFurnitureDetailApi.as_view(), name='detail-meuble-bien'),
 ]
