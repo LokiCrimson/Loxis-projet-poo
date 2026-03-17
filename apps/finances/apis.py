@@ -102,9 +102,15 @@ class ExpenseListCreateView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        # Ne jamais laisser le client définir des champs contrôlés par le serveur
+        safe_data = dict(serializer.validated_data)
+        for field in ("bien", "bien_id", "enregistre_par", "date_creation"):
+            safe_data.pop(field, None)
+
         expense = record_expense(
             property_id=self.request.data['bien_id'],
-            data=serializer.validated_data,
+            data=safe_data,
             created_by=self.request.user
         )
         return Response(ExpenseSerializer(expense).data, status=status.HTTP_201_CREATED)
