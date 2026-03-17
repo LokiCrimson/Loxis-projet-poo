@@ -37,8 +37,16 @@ function getPageTitle(pathname: string): string {
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const pageTitle = getPageTitle(location.pathname);
-  const user = mockCurrentUser;
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  if (!user) return null;
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
