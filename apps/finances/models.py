@@ -39,7 +39,12 @@ class RentPayment(models.Model):
         elif self.montant_paye > 0:
             self.statut = StatutPaiementEnum.PARTIEL
         else:
-            self.statut = StatutPaiementEnum.EN_ATTENTE
+            # Aucun paiement enregistré : si la date de paiement prévue est passée,
+            # on considère le loyer comme impayé, sinon on le laisse "en attente".
+            if self.date_paiement and self.date_paiement < date.today():
+                self.statut = StatutPaiementEnum.IMPAYE
+            else:
+                self.statut = StatutPaiementEnum.EN_ATTENTE
         self.reste_a_payer = self.montant_attendu - self.montant_paye
 
     def save(self, *args, **kwargs):
