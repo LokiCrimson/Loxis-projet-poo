@@ -26,3 +26,12 @@ class IsTenantRole(BasePermission):
             request.user.is_authenticated and 
             request.user.role == 'TENANT'
         )
+
+class IsAdminOrOwnerRole(BasePermission):
+    """Accès réservé aux administrateurs ou propriétaires"""
+    def has_permission(self, request, view):
+        return bool(
+            request.user and 
+            request.user.is_authenticated and 
+            request.user.role in ['ADMIN', 'OWNER']
+        )
