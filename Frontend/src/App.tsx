@@ -41,8 +41,8 @@ const OwnerRoute = ({ children }: { children: React.ReactNode }) => (
 );
 
 const App = () => (
-  <ThemeProvider>
-    <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
       <TooltipProvider>
         <Toaster />
         <BrowserRouter>
@@ -85,8 +85,8 @@ const App = () => (
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
-  </QueryClientProvider>
-</ThemeProvider>
+  </ThemeProvider>
+</QueryClientProvider>
 );
 
 export default App;
