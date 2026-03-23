@@ -1,0 +1,1 @@
+Fusion des modifications récentes du 17 mars 2026 (commit 2527f15).

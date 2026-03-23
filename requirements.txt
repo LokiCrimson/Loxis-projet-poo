@@ -1,0 +1,10 @@
+Django
+djangorestframework
+drf-spectacular
+python-dateutil
+Pillow
+reportlab
+djangorestframework-simplejwt
+pyotp
+qrcode
+django-modeltranslation

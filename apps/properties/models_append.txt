@@ -1,0 +1,24 @@
+
+class PropertyFurniture(models.Model):
+    """Meubles et équipements d'un bien"""
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='furniture')
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    purchase_date = models.DateField(null=True, blank=True)
+    
+    # État du meuble
+    NEW = 'NEW'
+    GOOD = 'GOOD'
+    USED = 'USED'
+    BROKEN = 'BROKEN'
+    CONDITION_CHOICES = [
+        (NEW, 'Neuf'),
+        (GOOD, 'Bon état'),
+        (USED, 'Usagé'),
+        (BROKEN, 'Cassé/Abîmé'),
+    ]
+    condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default=GOOD)
+
+    def __str__(self):
+        return f"{self.name} ({self.property.reference})"
