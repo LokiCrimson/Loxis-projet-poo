@@ -23,5 +23,7 @@ urlpatterns = [
     path('comptabilite/mensuel/', ComptaMensuelApi.as_view(), name='compta-mensuel'),
     path('comptabilite/par-bien/', ComptaParBienApi.as_view(), name='compta-par-bien'),
     path('quittances/', QuittanceListApi.as_view(), name='quittances-list'),
+    path('quittances/<int:pk>/pdf/', ReceiptDownloadView.as_view(), name='quittance-pdf'),
+    path('quittances/<int:pk>/pdf/download/', ReceiptDownloadView.as_view(), name='quittance-pdf-download'),
     path('quittances/<int:pk>/email/', QuittanceEmailApi.as_view(), name='quittance-email'),
 ]

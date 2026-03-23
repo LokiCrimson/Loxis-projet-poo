@@ -30,7 +30,7 @@ class PropertyReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyReview
         fields = ['id', 'property', 'tenant', 'tenant_name', 'rating', 'comment', 'is_public', 'created_at']
-        read_only_fields = ['tenant']
+        read_only_fields = ['tenant', 'property']
 
     def validate_rating(self, value):
         if value < 1 or value > 5:

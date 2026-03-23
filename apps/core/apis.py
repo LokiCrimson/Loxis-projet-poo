@@ -19,10 +19,12 @@ class AuditLogListApi(generics.ListAPIView):
     serializer_class = AuditLogSerializer
 
     def get_queryset(self):
+        user = self.request.user
         queryset = AuditLog.objects.select_related('user').all()
 
-        if self.request.user.role == 'TENANT':
-            queryset = queryset.filter(user=self.request.user)
+        role = getattr(user, 'role', None)
+        if role == 'TENANT':
+            queryset = queryset.filter(user=user)
 
         action = self.request.query_params.get('action')
         entity = self.request.query_params.get('entity_name')

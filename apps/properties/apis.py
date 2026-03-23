@@ -258,6 +258,12 @@ class PropertyReviewListCreateApi(generics.ListCreateAPIView):
         return PropertyReview.objects.filter(property_id=property_id, is_public=True)
 
     def perform_create(self, serializer):
-        property_obj = get_object_or_404(Property, id=self.kwargs.get('property_id'))
-        # Seuls les locataires devraient pouvoir commenter (ou n'importe quel connecté pour la demo)
+        property_id = self.kwargs.get('property_id')
+        property_obj = get_object_or_404(Property, id=property_id)
+        
+        # Supprimer tout avis existant de cet utilisateur pour ce bien pour éviter l'unique_together
+        PropertyReview.objects.filter(property=property_obj, tenant=self.request.user).delete()
+        
+        # Pour la démo, on autorise tout le monde (admin/owner/tenant) à commenter
+        # Mais on s'assure que l'utilisateur est passé proprement
         serializer.save(tenant=self.request.user, property=property_obj)

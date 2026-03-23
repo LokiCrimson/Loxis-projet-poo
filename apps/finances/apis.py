@@ -113,6 +113,15 @@ class ReceiptDownloadView(generics.RetrieveAPIView):
         if not receipt.pdf_url:
             receipt.generer_pdf()
 
+        # En mode API, on renvoie le fichier directement si c'est un GET
+        if request.method == 'GET' and 'pdf' in request.path:
+            from django.http import FileResponse
+            # On cherche le fichier sur le disque
+            path = receipt.pdf_url.replace('/media/', '') # Ex: receipts/Quittance...
+            full_path = os.path.join(settings.MEDIA_ROOT, path)
+            if os.path.exists(full_path):
+                return FileResponse(open(full_path, 'rb'), content_type='application/pdf')
+
         return Response({'pdf_url': receipt.pdf_url})
 
 class ResendReceiptView(generics.GenericAPIView):
@@ -220,13 +229,46 @@ class FinancialReportView(generics.RetrieveAPIView):
         return get_financial_summary_for_property(property_id, year)
 
 
+import csv
+from django.http import HttpResponse
+
 class ExportView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated, IsAdminRole | IsOwnerRole]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Generate CSV
-        # Implementation needed
-        return Response({'message': 'Export not implemented'})
+        from .models import Receipt
+        user = request.user
+        
+        # Filtrer selon rôle
+        qs = Receipt.objects.all().select_related('paiement_loyer__bail__bien', 'paiement_loyer__bail__locataire__user')
+        role = getattr(user, 'role', None)
+        if role == 'OWNER':
+            qs = qs.filter(paiement_loyer__bail__bien__owner=user)
+        elif role == 'TENANT':
+            qs = qs.filter(paiement_loyer__bail__locataire__user=user)
+
+        # Configurer le header HTTP pour CSV
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="Export_Quittances_Loxis_{user.id}.csv"'
+        
+        writer = csv.writer(response)
+        # En-têtes (Headers)
+        writer.writerow(['Numéro', 'Date émission', 'Locataire', 'Bien', 'Période', 'Montant Loyer', 'Montant Charges', 'Montant Total', 'Statut Envoi'])
+        
+        for q in qs:
+            writer.writerow([
+                q.numero or f"QUIT-{q.id}",
+                q.date_emission.strftime('%d/%m/%Y') if q.date_emission else '-',
+                q.paiement_loyer.bail.locataire.user.get_full_name() if q.paiement_loyer.bail.locataire else 'N/A',
+                q.paiement_loyer.bail.bien.reference if q.paiement_loyer.bail.bien else 'N/A',
+                f"{q.paiement_loyer.periode_mois}/{q.paiement_loyer.periode_annee}",
+                q.montant_loyer,
+                q.montant_charges,
+                q.montant_total,
+                'Envoyée' if q.envoyee else 'En attente'
+            ])
+            
+        return response
 
 class ComptaResumeApi(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]

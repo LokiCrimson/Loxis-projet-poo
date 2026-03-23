@@ -155,7 +155,7 @@ class PropertyFurniture(models.Model):
 class PropertyReview(models.Model):
     """CU-XX : Laisser un avis sur un bien (Note + Commentaire)"""
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='reviews')
-    tenant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, limit_choices_to={'role': 'TENANT'})
+    tenant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     rating = models.PositiveSmallIntegerField(verbose_name="Note (1-5)")
     comment = models.TextField(verbose_name="Commentaire", blank=True)
     is_public = models.BooleanField(default=True, verbose_name="Afficher publiquement")
