@@ -5,11 +5,14 @@ from .models import RentPayment, Receipt, ExpenseCategory, Expense
 class RentPaymentSerializer(serializers.ModelSerializer):
     locataire = serializers.CharField(source='bail.locataire.last_name', read_only=True)
     bien_reference = serializers.CharField(source='bail.bien.reference', read_only=True)
-    moyen_display = serializers.CharField(source='get_moyen_display', read_only=True)
+    moyen_display = serializers.SerializerMethodField()
 
     class Meta:
         model = RentPayment
         fields = '__all__'
+
+    def get_moyen_display(self, obj):
+        return obj.get_moyen_display() if obj.moyen else ""
 
 
 class RentPaymentCreateSerializer(serializers.ModelSerializer):
@@ -38,7 +41,6 @@ class ReceiptSerializer(serializers.ModelSerializer):
     bien_reference = serializers.CharField(source='paiement_loyer.bail.bien.reference', read_only=True)
     bien_adresse = serializers.CharField(source='paiement_loyer.bail.bien.address', read_only=True)
     periode = serializers.SerializerMethodField()
-    montant_total = serializers.DecimalField(max_digits=12, decimal_places=0)
     
     class Meta:
         model = Receipt
