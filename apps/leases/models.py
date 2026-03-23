@@ -133,11 +133,6 @@ class Lease(models.Model):
             "montant_total": float(montant_total)
         }
 
-    @property
-    def is_followed(self):
-        # Pour l'instant on peut stocker ça dans un champ ou juste retourner si un flag existe
-        return getattr(self, '_is_followed', False)
-
     def save(self, *args, **kwargs):
         if not self.reference:
             # Auto-generate reference
