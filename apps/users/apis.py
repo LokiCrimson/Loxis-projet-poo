@@ -148,12 +148,31 @@ class UserDetailApi(APIView):
 
     def patch(self, request, user_id):
         if request.user.role != 'ADMIN' and request.user.id != user_id:
-            return Response({'detail': 'AccÃ¨s refusÃ©.'}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'detail': 'Accès refusé.'}, status=status.HTTP_403_FORBIDDEN)
             
         from django.contrib.auth import get_user_model
         User = get_user_model()
         try:
             user = User.objects.get(pk=user_id)
+            
+            # Resetting Password (Admin only or user themselves)
+            password = request.data.get('password')
+            if password:
+                user.set_password(password)
+                user.save()
+                
+                from apps.core.services import log_audit
+                from apps.core.models import AuditLog
+                log_audit(
+                    actor=request.user,
+                    action=AuditLog.ActionType.UPDATE,
+                    entity_name='User',
+                    entity_id=str(user.id),
+                    details={'email': user.email, 'event': 'password_reset_by_admin' if request.user.role == 'ADMIN' else 'password_changed'},
+                    severity=AuditLog.Severity.WARNING
+                )
+
+            # Update role (Admin only)
             role = request.data.get('role')
             if role and request.user.role == 'ADMIN':
                 user.role = role
@@ -164,7 +183,7 @@ class UserDetailApi(APIView):
             
             return Response({'id': user.id, 'email': user.email, 'role': user.role})
         except User.DoesNotExist:
-            return Response({'detail': 'Utilisateur non trouvÃ©.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'detail': 'Utilisateur non trouvé.'}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, user_id):
         if request.user.role != 'ADMIN':
