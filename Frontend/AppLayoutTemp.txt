@@ -1,0 +1,237 @@
+import { useState, useEffect } from 'react';
+import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
+import {
+  LayoutDashboard, Building2, Users, FileText, CreditCard,
+  Receipt, BarChart3, Bell, Settings, LogOut, Menu, X, Search, Home
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { useAuth } from '@/contexts/AuthContext';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+
+const navItems = [
+  { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+  { label: 'Mes Biens', icon: Building2, path: '/biens' },
+  { label: 'Locataires', icon: Users, path: '/locataires' },
+  { label: 'Baux', icon: FileText, path: '/baux' },
+  { label: 'Paiements', icon: CreditCard, path: '/paiements' },
+  { label: 'Quittances', icon: Receipt, path: '/quittances' },
+  { label: 'Comptabilité', icon: BarChart3, path: '/comptabilite' },
+  { label: 'Alertes', icon: Bell, path: '/alertes' },
+  { label: 'Paramètres', icon: Settings, path: '/parametres' },
+];
+
+const mobileNavItems = [
+  { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+  { label: 'Biens', icon: Building2, path: '/biens' },
+  { label: 'Compta', icon: BarChart3, path: '/comptabilite' },
+  { label: 'Alertes', icon: Bell, path: '/alertes' },
+];
+
+function getPageTitle(pathname: string): string {
+  const item = navItems.find(n => pathname.startsWith(n.path));
+  if (pathname.match(/^\/biens\/\d+/)) return 'Détail du bien';
+  if (pathname.match(/^\/locataires\/\d+/)) return 'Détail locataire';
+  if (pathname.match(/^\/baux\/\d+/)) return 'Détail du bail';
+  return item?.label || 'LOXIS';
+}
+
+export default function AppLayout() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const pageTitle = getPageTitle(location.pathname);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  if (!user) return null;
+
+  return (
+    <div className="relative flex h-[100dvh] w-full items-center justify-center overflow-hidden bg-slate-50 dark:bg-[#0a0c10]">
+      {/* Background Blobs for depth */}
+      <div className="pointer-events-none absolute -left-20 top-20 h-96 w-96 rounded-full bg-primary/10 blur-[100px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-20 h-[500px] w-[500px] rounded-full bg-secondary/10 blur-[120px]" />
+
+      {/* 
+        DESKTOP DOCK (Vertical Left)
+      */}
+      <nav className="fixed left-6 top-1/2 z-50 hidden max-h-[90vh] -translate-y-1/2 flex-col items-center justify-between rounded-[2rem] border border-white/40 bg-white/40 p-4 py-6 shadow-2xl backdrop-blur-2xl dark:border-slate-700/50 dark:bg-slate-900/40 lg:flex">
+        
+        {/* Top: Home/Logo */}
+        <div className="mb-6">
+          <Link to="/dashboard" className="group relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-110 hover:shadow-primary/50">
+            <Home className="h-6 w-6" />
+            <span className="pointer-events-none absolute left-16 translate-x-4 whitespace-nowrap rounded-xl border border-white/20 bg-background/80 px-3 py-1.5 text-sm font-semibold text-foreground opacity-0 shadow-xl backdrop-blur-md transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 dark:border-slate-700/50">
+              Logo Loxis
+            </span>
+          </Link>
+        </div>
+        
+        {/* Middle: Nav Menu */}
+        <div className="flex flex-1 flex-col justify-center gap-3 overflow-y-auto no-scrollbar pb-6 pt-2">
+          {navItems.map((item) => {
+            const isActive = location.pathname.startsWith(item.path);
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={cn(
+                  'group relative flex h-12 w-12 items-center justify-center rounded-[1.25rem] transition-all duration-300 ease-out hover:scale-110',
+                  isActive
+                    ? 'bg-white shadow-md text-primary dark:bg-card dark:text-primary dark:shadow-black/50'
+                    : 'text-muted-foreground hover:bg-white/50 hover:text-foreground dark:hover:bg-slate-800/50'
+                )}
+              >
+                <item.icon className={cn("h-5 w-5 transition-transform duration-300", isActive && "scale-110")} />
+                {item.label === 'Alertes' && (
+                  <span className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-destructive shadow-sm dark:border-slate-800" />
+                )}
+                {/* Custom Tooltip */}
+                <span className="pointer-events-none absolute left-16 translate-x-4 whitespace-nowrap rounded-xl border border-white/20 bg-background/80 px-3 py-1.5 text-sm font-medium text-foreground opacity-0 shadow-xl backdrop-blur-md transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 dark:border-slate-700/50">
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+        
+        {/* Bottom: User & Tools */}
+        <div className="mt-auto flex flex-col items-center gap-4 pt-4 border-t border-white/20 dark:border-slate-700/50">
+          <ThemeToggle />
+          <button 
+            onClick={handleLogout}
+            className="group relative flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive transition-all duration-300 hover:scale-110 hover:bg-destructive hover:text-destructive-foreground hover:shadow-lg hover:shadow-destructive/30"
+          >
+            <LogOut className="h-5 w-5" />
+            <span className="pointer-events-none absolute left-16 translate-x-4 whitespace-nowrap rounded-xl border border-white/20 bg-background/80 px-3 py-1.5 text-sm font-medium text-foreground opacity-0 shadow-xl backdrop-blur-md transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 dark:border-slate-700/50">
+              Déconnexion
+            </span>
+          </button>
+        </div>
+      </nav>
+
+      {/* 
+        MAIN ISLAND (The app container)
+      */}
+      <main className="relative z-10 flex h-[100dvh] w-full flex-col overflow-hidden bg-card/80 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out backdrop-blur-[25px] sm:h-[95vh] sm:w-[95%] sm:max-w-[1400px] sm:rounded-[2.5rem] sm:border sm:border-white/40 sm:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] sm:dark:border-slate-700/50 lg:ml-32 lg:w-auto lg:flex-1">
+        
+        {/* Floating Top Control Bar Component */}
+        <header className={cn(
+          "z-20 flex h-20 shrink-0 items-center justify-between px-6 transition-all duration-300 sm:px-10",
+          scrolled && "border-b border-border/50 bg-background/50 backdrop-blur-md"
+        )}>
+          {/* Mobile Menu Button */}
+          <div className="flex items-center gap-4">
+            <button className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted/50 transition-colors hover:bg-muted lg:hidden" onClick={() => setMobileMenuOpen(true)}>
+              <Menu className="h-5 w-5" />
+            </button>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground transition-all">{pageTitle}</h1>
+          </div>
+          
+          <div className="flex items-center gap-6">
+            {/* Elegant Search Input */}
+            <div className="group relative hidden md:block">
+              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
+              <Input 
+                placeholder="Rechercher partout..." 
+                className="h-10 w-64 rounded-full border-white/20 bg-white/40 pl-10 shadow-inner backdrop-blur-sm transition-all focus-visible:w-72 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-primary/20 dark:border-slate-700/50 dark:bg-slate-900/40 dark:focus-visible:bg-slate-900"
+              />
+            </div>
+            
+            {/* Top Right Controls & Profile */}
+            <div className="flex h-12 items-center gap-3 rounded-full border border-white/40 bg-white/40 pl-3 pr-4 shadow-sm backdrop-blur-md dark:border-slate-700/50 dark:bg-slate-900/40">
+              <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/60 text-xs font-bold text-white shadow-md">
+                 {user?.prenom?.[0] || 'U'}{user?.nom?.[0] || ''}
+                 <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-secondary" />
+              </div>
+              <div className="hidden flex-col leading-none sm:flex">
+                <span className="text-sm font-semibold text-foreground">{user?.prenom} {user?.nom}</span>
+                <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{user?.role}</span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Content Viewport with Custom Spacing */}
+        <div className="relative flex-1 overflow-y-auto px-4 pb-28 pt-4 sm:px-10 sm:pb-10">
+           <div className="mx-auto h-full w-full max-w-7xl animate-in fade-in duration-500">
+              <Outlet />
+           </div>
+        </div>
+      </main>
+
+      {/* 
+        MOBILE DOCK (Bottom Floating)
+      */}
+      <nav className="fixed bottom-6 left-1/2 z-50 flex w-[92%] -translate-x-1/2 items-center justify-around gap-2 rounded-[2rem] border border-white/40 bg-white/60 p-2 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-2xl dark:border-slate-700/50 dark:bg-slate-900/60 lg:hidden">
+        {mobileNavItems.map((item) => {
+          const isActive = location.pathname.startsWith(item.path);
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={cn(
+                'relative flex flex-col items-center gap-1 rounded-2xl p-2 transition-all duration-300',
+                isActive ? 'scale-110 bg-white shadow-md dark:bg-card dark:text-primary' : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <item.icon className="h-5 w-5" />
+              {isActive && <span className="absolute -bottom-1 h-1 w-1 rounded-full bg-primary" />}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Mobile Sidebar Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-[100] bg-foreground/20 backdrop-blur-sm lg:hidden" onClick={() => setMobileMenuOpen(false)}>
+          <aside 
+            className="absolute left-0 top-0 h-full w-72 flex-col bg-card p-6 shadow-2xl animate-in slide-in-from-left duration-300 flex"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="mb-8 flex items-center justify-between">
+              <span className="text-xl font-bold text-primary">LOXIS</span>
+              <button className="rounded-lg bg-muted p-2" onClick={() => setMobileMenuOpen(false)}>
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="flex flex-1 flex-col gap-2 overflow-y-auto">
+              {navItems.map(item => (
+                <Link 
+                  key={item.path} 
+                  to={item.path} 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors",
+                    location.pathname.startsWith(item.path) ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  <item.icon className="h-5 w-5" />
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+
+            <div className="mt-auto border-t border-border pt-4">
+              <button onClick={handleLogout} className="flex w-full items-center justify-center gap-2 rounded-xl bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground">
+                <LogOut className="h-4 w-4" /> Déconnexion
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+    </div>
+  );
+}

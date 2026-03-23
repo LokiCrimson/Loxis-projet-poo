@@ -1,0 +1,14 @@
+const fs=require('fs');
+let c = fs.readFileSync('src/pages/BiensPage.tsx','utf8');
+c = c.replace(/bien\.adresse/g, '(bien.address || bien.adresse)');
+c = c.replace(/bien\.categorie/g, '(bien.category_name || bien.category || bien.categorie || \"N/A\")');
+c = c.replace(/bien\.charges/g, '(Number(bien.base_charges || bien.charges || 0))');
+c = c.replace(/bien\.depot_garantie/g, '(Number(bien.guarantee_deposit || bien.depot_garantie || 0))');
+c = c.replace(/bien\.loyer_hc/g, '(Number(bien.base_rent_hc || bien.loyer_hc || 0))');
+c = c.replace(/bien\.nombre_pieces/g, '(bien.rooms_count || bien.nombre_pieces || 0)');
+c = c.replace(/bien\.statut/g, '(bien.status || bien.statut || \"VACANT\")');
+c = c.replace(/bien\.surface/g, '(bien.surface_area || bien.surface || 0)');
+c = c.replace(/bien\.type_bien/g, '(bien.type || bien.property_type || bien.type_bien || \"N/A\")');
+c = c.replace(/bien\.ville/g, '(bien.city || bien.ville || \"\")');
+fs.writeFileSync('src/pages/BiensPage.tsx', c);
+console.log('BiensPage fixed!');
