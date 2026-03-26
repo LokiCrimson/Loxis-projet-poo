@@ -100,6 +100,16 @@ export default function LandingPage() {
 
       {/* HERO SECTION - Inspiré des KPI Cards */}
       <section className="relative px-6 py-24 lg:py-40 overflow-hidden">
+        {/* Background Image Layer */}
+        <div className="absolute inset-0 -z-20">
+          <img 
+            src="/home-bg.jpg" 
+            alt="Background" 
+            className="w-full h-full object-cover opacity-60 dark:opacity-30 mix-blend-multiply dark:mix-blend-overlay"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/50 via-white/20 to-white dark:from-slate-950/80 dark:via-slate-950/40 dark:to-slate-950" />
+        </div>
+
         {/* Abstract Background Element (comme dans le donut card) */}
         <div className="absolute top-0 right-0 p-20 opacity-[0.03] -z-10 dark:opacity-[0.05]">
           <Activity className="h-[600px] w-[600px] text-slate-900" />

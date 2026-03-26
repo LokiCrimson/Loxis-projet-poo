@@ -89,7 +89,7 @@ export default function BauxPage() {
           </p>
         </div>
         <Button onClick={() => setModalOpen(true)} className="rounded-2xl shadow-lg shadow-primary/20 font-black h-12 px-6">
-          <Plus className="mr-2 h-5 w-5" /> {t('new_lease')}
+          <Plus className="mr-2 h-5 w-5" /> {t('Nouveau Bail')}
         </Button>
       </div>
 
@@ -98,7 +98,7 @@ export default function BauxPage() {
           <div className="relative flex-1 min-w-[280px] max-w-md">
             <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
             <Input 
-              placeholder={t('lease_search_placeholder')} 
+              placeholder={t('Rechercher un bail...')} 
               className="h-14 pl-14 pr-6 rounded-[1.5rem] border-none bg-white dark:bg-slate-900 shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20 text-base font-medium text-slate-900 dark:text-white" 
               value={search} 
               onChange={e => setSearch(e.target.value)} 

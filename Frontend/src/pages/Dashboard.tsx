@@ -75,7 +75,7 @@ export default function Dashboard() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            {t('hello')}, {user?.first_name || 'Dave'} !
+            {t('hello')}, {user?.first_name || user?.email?.split('@')[0] || 'Utilisateur'} !
           </h1>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
             {isAdmin ? t('admin_platform_desc') : t('owner_platform_desc')}

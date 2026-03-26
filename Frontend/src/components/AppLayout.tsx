@@ -22,27 +22,27 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const navItems = [
-  { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', roles: ['ADMIN', 'OWNER'] },
-  { label: 'Mon Espace', icon: LayoutDashboard, path: '/mon-espace', roles: ['TENANT'] },
-  { label: 'Biens', icon: Building2, path: '/biens', roles: ['ADMIN', 'OWNER'] },
-  { label: 'Réservations', icon: MessageSquare, path: '/reservations', roles: ['ADMIN', 'OWNER'] },
-  { label: 'Catalogue', icon: Building2, path: '/explorer', roles: ['TENANT'] },
-  { label: 'Mes Locations', icon: ShieldCheck, path: '/mes-locations', roles: ['TENANT'] },
-  { label: 'Locataires', icon: Users, path: '/locataires', roles: ['ADMIN', 'OWNER'] },
-  { label: 'Baux', icon: FileText, path: '/baux', roles: ['ADMIN', 'OWNER'] },
-  { label: 'Paiements', icon: CreditCard, path: '/paiements', roles: ['ADMIN', 'OWNER'] },
-  { label: 'Mes Paiements', icon: CreditCard, path: '/mes-paiements', roles: ['TENANT'] },
-  { label: 'Quittances', icon: Receipt, path: '/quittances', roles: ['ADMIN', 'OWNER'] },
-  { label: 'Avis Reçus', icon: Star, path: '/avis', roles: ['ADMIN', 'OWNER'] },
-  { label: 'Mes Avis', icon: Star, path: '/mes-avis', roles: ['TENANT'] },
-  { label: 'Comptabilité', icon: BarChart3, path: '/comptabilite', roles: ['ADMIN', 'OWNER'] },
+  { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', roles: ['ADMIN', 'OWNER', 'proprietaire', 'admin'] },
+  { label: 'Mon Espace', icon: LayoutDashboard, path: '/mon-espace', roles: ['TENANT', 'locataire'] },
+  { label: 'Biens', icon: Building2, path: '/biens', roles: ['ADMIN', 'OWNER', 'proprietaire', 'admin'] },
+  { label: 'Réservations', icon: MessageSquare, path: '/reservations', roles: ['ADMIN', 'OWNER', 'proprietaire', 'admin'] },
+  { label: 'Catalogue', icon: Building2, path: '/explorer', roles: ['TENANT', 'locataire'] },
+  { label: 'Mes Locations', icon: ShieldCheck, path: '/mes-locations', roles: ['TENANT', 'locataire'] },
+  { label: 'Locataires', icon: Users, path: '/locataires', roles: ['ADMIN', 'OWNER', 'proprietaire', 'admin'] },
+  { label: 'Baux', icon: FileText, path: '/baux', roles: ['ADMIN', 'OWNER', 'proprietaire', 'admin'] },
+  { label: 'Paiements', icon: CreditCard, path: '/paiements', roles: ['ADMIN', 'OWNER', 'proprietaire', 'admin'] },
+  { label: 'Mes Paiements', icon: CreditCard, path: '/mes-paiements', roles: ['TENANT', 'locataire'] },
+  { label: 'Quittances', icon: Receipt, path: '/quittances', roles: ['ADMIN', 'OWNER', 'proprietaire', 'admin'] },
+  { label: 'Avis Reçus', icon: Star, path: '/avis', roles: ['ADMIN', 'OWNER', 'proprietaire', 'admin'] },
+  { label: 'Mes Avis', icon: Star, path: '/mes-avis', roles: ['TENANT', 'locataire'] },
+  { label: 'Comptabilité', icon: BarChart3, path: '/comptabilite', roles: ['ADMIN', 'OWNER', 'proprietaire', 'admin'] },
 ];
 
 const mobileNavItems = [
-  { label: 'Catalogue', icon: Building2, path: '/explorer', roles: ['TENANT'] },
-  { label: 'Mes Locations', icon: ShieldCheck, path: '/mes-locations', roles: ['TENANT'] },
-  { label: 'my_assets', icon: Building2, path: '/biens', roles: ['ADMIN', 'OWNER'] },
-  { label: 'accounting', icon: BarChart3, path: '/comptabilite', roles: ['ADMIN', 'OWNER'] },
+  { label: 'Catalogue', icon: Building2, path: '/explorer', roles: ['TENANT', 'locataire'] },
+  { label: 'Mes Locations', icon: ShieldCheck, path: '/mes-locations', roles: ['TENANT', 'locataire'] },
+  { label: 'my_assets', icon: Building2, path: '/biens', roles: ['ADMIN', 'OWNER', 'proprietaire', 'admin'] },
+  { label: 'accounting', icon: BarChart3, path: '/comptabilite', roles: ['ADMIN', 'OWNER', 'proprietaire', 'admin'] },
 ];
 
 function getPageTitle(pathname: string, t: (key: string) => string): string {
@@ -99,7 +99,7 @@ export default function AppLayout() {
         
         {/* Top: Home/Logo */}
         <div className="mb-6">
-          <Link to={user?.role === 'TENANT' ? "/mon-espace" : "/dashboard"} className="group relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-110 hover:shadow-primary/50">
+          <Link to={(user?.role === 'TENANT' || user?.role === 'locataire') ? "/mon-espace" : "/dashboard"} className="group relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-110 hover:shadow-primary/50">
             <Home className="h-6 w-6" />
             <span className="pointer-events-none absolute left-16 translate-x-4 whitespace-nowrap rounded-xl border border-white/20 bg-background/80 px-3 py-1.5 text-sm font-semibold text-foreground opacity-0 shadow-xl backdrop-blur-md transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 dark:border-slate-700/50">
               Logo Loxis
