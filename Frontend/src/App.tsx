@@ -23,6 +23,15 @@ import ComptabilitePage from "@/pages/ComptabilitePage";
 import AlertesPage from "@/pages/AlertesPage";
 import ParametresPage from "@/pages/ParametresPage";
 import ReserverBienPage from "@/pages/ReserverBienPage";
+import ExplorerBiensPage from "@/pages/ExplorerBiensPage";
+import PublicBienDetailPage from "@/pages/PublicBienDetailPage";
+import MesLocationsPage from "@/pages/MesLocationsPage";
+import MyRentalRequestsPage from "@/pages/MyRentalRequestsPage";
+import OwnerReservationsPage from "@/pages/OwnerReservationsPage";
+import DashboardReviewsPage from "@/pages/DashboardReviewsPage";
+import ActiveLeasePage from "@/pages/ActiveLeasePage";
+import PaymentsPage from "@/pages/PaymentsPage";
+import ReviewsPage from "@/pages/ReviewsPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,7 +54,7 @@ const App = () => (
     <ThemeProvider>
       <TooltipProvider>
         <Toaster />
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <AuthProvider>
           <Routes>
             {/* Public routes */}
@@ -62,13 +71,21 @@ const App = () => (
             {/* Tenant space */}
             <Route element={<ProtectedRoute allowedRoles={['locataire', 'TENANT']}><AppLayout /></ProtectedRoute>}>
                <Route path="/mon-espace" element={<MonEspacePage />} />
+               <Route path="/explorer" element={<ExplorerBiensPage />} />
+               <Route path="/mes-locations" element={<MesLocationsPage />} />
                <Route path="/reserver" element={<ReserverBienPage />} />
+               <Route path="/reserver/:id" element={<PublicBienDetailPage />} />
+               <Route path="/mes-demandes" element={<MyRentalRequestsPage />} />
+               <Route path="/mon-bail" element={<ActiveLeasePage />} />
+               <Route path="/mes-paiements" element={<PaymentsPage />} />
+               <Route path="/mes-avis" element={<ReviewsPage />} />
                <Route path="/mes-quittances" element={<QuittancesPage />} />
             </Route>
 
             {/* Owner/Admin dashboard */}
             <Route element={<OwnerRoute><AppLayout /></OwnerRoute>}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/reservations" element={<OwnerReservationsPage />} />
               <Route path="/biens" element={<BiensPage />} />
               <Route path="/biens/:id" element={<BienDetailPage />} />
               <Route path="/locataires" element={<LocatairesPage />} />
@@ -78,6 +95,7 @@ const App = () => (
               <Route path="/paiements" element={<PaiementsPage />} />
               <Route path="/quittances" element={<QuittancesPage />} />
               <Route path="/comptabilite" element={<ComptabilitePage />} />
+              <Route path="/avis" element={<DashboardReviewsPage />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

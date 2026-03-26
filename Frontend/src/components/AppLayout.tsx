@@ -1,13 +1,16 @@
 ﻿import { useState, useEffect } from 'react';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Building2, Users, FileText, CreditCard,
-  Receipt, BarChart3, Bell, Settings, LogOut, Menu, X, Search, Home
+  Receipt, BarChart3, Bell, Settings, LogOut, Menu, X, Search, Home, Star, MessageSquare, ShieldCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAllAlertes } from '@/hooks/use-alertes';
+import { useAllAlertes, useAlertCount } from '@/hooks/use-alertes';
+import { getAllAlertes } from '@/services/alertes.service';
+import { useQuery } from '@tanstack/react-query';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import {
   DropdownMenu,
@@ -19,42 +22,58 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const navItems = [
-  { label: 'Tableau de bord', icon: LayoutDashboard, path: '/dashboard', roles: ['ADMIN', 'OWNER'] },
+  { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', roles: ['ADMIN', 'OWNER'] },
   { label: 'Mon Espace', icon: LayoutDashboard, path: '/mon-espace', roles: ['TENANT'] },
-  { label: 'Mes Biens', icon: Building2, path: '/biens', roles: ['ADMIN', 'OWNER'] },
-  { label: 'Réserver un bien', icon: Home, path: '/reserver', roles: ['TENANT'] },
+  { label: 'Biens', icon: Building2, path: '/biens', roles: ['ADMIN', 'OWNER'] },
+  { label: 'Réservations', icon: MessageSquare, path: '/reservations', roles: ['ADMIN', 'OWNER'] },
+  { label: 'Catalogue', icon: Building2, path: '/explorer', roles: ['TENANT'] },
+  { label: 'Mes Locations', icon: ShieldCheck, path: '/mes-locations', roles: ['TENANT'] },
   { label: 'Locataires', icon: Users, path: '/locataires', roles: ['ADMIN', 'OWNER'] },
   { label: 'Baux', icon: FileText, path: '/baux', roles: ['ADMIN', 'OWNER'] },
   { label: 'Paiements', icon: CreditCard, path: '/paiements', roles: ['ADMIN', 'OWNER'] },
+  { label: 'Mes Paiements', icon: CreditCard, path: '/mes-paiements', roles: ['TENANT'] },
   { label: 'Quittances', icon: Receipt, path: '/quittances', roles: ['ADMIN', 'OWNER'] },
-  { label: 'Mes Quittances', icon: Receipt, path: '/mes-quittances', roles: ['TENANT'] },
+  { label: 'Avis Reçus', icon: Star, path: '/avis', roles: ['ADMIN', 'OWNER'] },
+  { label: 'Mes Avis', icon: Star, path: '/mes-avis', roles: ['TENANT'] },
   { label: 'Comptabilité', icon: BarChart3, path: '/comptabilite', roles: ['ADMIN', 'OWNER'] },
-  { label: 'Alertes', icon: Bell, path: '/alertes', roles: ['ADMIN', 'OWNER', 'TENANT'] },
 ];
 
 const mobileNavItems = [
-  { label: 'Biens', icon: Building2, path: '/biens', roles: ['ADMIN', 'OWNER'] },
-  { label: 'Réserver', icon: Home, path: '/reserver', roles: ['TENANT'] },
-  { label: 'Compta', icon: BarChart3, path: '/comptabilite', roles: ['ADMIN', 'OWNER'] },
+  { label: 'Catalogue', icon: Building2, path: '/explorer', roles: ['TENANT'] },
+  { label: 'Mes Locations', icon: ShieldCheck, path: '/mes-locations', roles: ['TENANT'] },
+  { label: 'my_assets', icon: Building2, path: '/biens', roles: ['ADMIN', 'OWNER'] },
+  { label: 'accounting', icon: BarChart3, path: '/comptabilite', roles: ['ADMIN', 'OWNER'] },
 ];
 
-function getPageTitle(pathname: string): string {
+function getPageTitle(pathname: string, t: (key: string) => string): string {
   const item = navItems.find(n => pathname.startsWith(n.path));
-  if (pathname.match(/^\/biens\/\d+/)) return 'Détail du bien';
-  if (pathname.match(/^\/locataires\/\d+/)) return 'Détail locataire';
-  if (pathname.match(/^\/baux\/\d+/)) return 'Détail du bail';
-  return item?.label || 'LOXIS';
+  if (pathname.match(/^\/biens\/\d+/)) return t('asset_detail');
+  if (pathname.match(/^\/locataires\/\d+/)) return t('tenant_detail');
+  if (pathname.match(/^\/baux\/\d+/)) return t('lease_detail');
+  return item ? t(item.label) : 'LOXIS';
 }
 
 export default function AppLayout() {
+  const { t, i18n } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { data: alertes } = useAllAlertes({ lu: 'false' });
-  const nonLuesCount = alertes?.length || 0;
-  const pageTitle = getPageTitle(location.pathname);
+  
+  const { data: nonLuesCount = 0, refetch } = useAlertCount();
+  
+  const pageTitle = getPageTitle(location.pathname, t);
+
+  useEffect(() => {
+    // Rafraîchir les notifications lors du changement de page
+    refetch();
+  }, [location.pathname, refetch]);
+
+  const toggleLanguage = () => {
+    const nextLang = i18n.language === 'fr' ? 'en' : 'fr';
+    i18n.changeLanguage(nextLang);
+  };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     setScrolled(e.currentTarget.scrollTop > 20);
@@ -106,12 +125,12 @@ export default function AppLayout() {
                 )}
               >
                 <item.icon className={cn("h-5 w-5 transition-transform duration-300", isActive && "scale-110")} />
-                {item.label === 'Alertes' && nonLuesCount > 0 && (
+                {item.label === 'alerts' && nonLuesCount > 0 && (
                   <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full border border-white bg-destructive shadow-sm dark:border-slate-800 animate-pulse" />
                 )}
                 {/* Custom Tooltip */}
                 <span className="pointer-events-none absolute left-16 translate-x-4 whitespace-nowrap rounded-xl border border-white/20 bg-background/80 px-3 py-1.5 text-sm font-medium text-foreground opacity-0 shadow-xl backdrop-blur-md transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 dark:border-slate-700/50">
-                  {item.label}
+                  {t(item.label)}
                 </span>
               </Link>
             );
@@ -122,7 +141,7 @@ export default function AppLayout() {
       {/* 
         MAIN ISLAND (The app container)
       */}
-      <main className="relative z-10 flex h-[100dvh] w-full flex-col overflow-hidden bg-card/80 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out backdrop-blur-[25px] sm:h-[95vh] sm:w-[95%] sm:max-w-[1400px] sm:rounded-[2.5rem] sm:border sm:border-white/40 sm:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] sm:dark:border-slate-700/50 lg:ml-32 lg:w-auto lg:flex-1">
+      <main className="relative z-10 flex h-[100dvh] w-full flex-col overflow-hidden bg-white/80 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out backdrop-blur-[25px] sm:h-[95vh] sm:w-[95%] sm:max-w-[1400px] sm:rounded-[2.5rem] sm:border sm:border-white/40 sm:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:bg-slate-900/80 sm:dark:border-slate-800/50 lg:ml-32 lg:w-auto lg:flex-1">
         
         {/* Floating Top Control Bar Component */}
         <header className={cn(
@@ -138,11 +157,19 @@ export default function AppLayout() {
           </div>
           
           <div className="flex items-center gap-4 sm:gap-6">
+            {/* Language Toggle */}
+            <button 
+              onClick={toggleLanguage}
+              className="flex items-center justify-center rounded-full bg-white/40 shadow-sm backdrop-blur-md dark:bg-slate-900/40 border border-white/40 dark:border-slate-700/50 h-10 w-10 sm:h-12 sm:w-12 text-[10px] font-black uppercase tracking-tighter hover:bg-white/60 transition-colors"
+            >
+              {i18n.language === 'fr' ? 'EN' : 'FR'}
+            </button>
+
             {/* Elegant Search Input */}
             <div className="group relative hidden md:block">
               <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
               <Input 
-                placeholder="Rechercher partout..." 
+                placeholder={t('search')} 
                 className="h-10 w-64 rounded-full border-white/20 bg-white/40 pl-10 shadow-inner backdrop-blur-sm transition-all focus-visible:w-72 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-primary/20 dark:border-slate-700/50 dark:bg-slate-900/40 dark:focus-visible:bg-slate-900"
               />
             </div>
@@ -187,7 +214,7 @@ export default function AppLayout() {
                 <DropdownMenuItem asChild className="rounded-xl cursor-pointer hover:bg-primary/10 hover:text-primary focus:bg-primary/10 focus:text-primary">
                   <Link to="/parametres" className="flex w-full items-center gap-2">
                     <Settings className="h-4 w-4" />
-                    <span>Paramètres du compte</span>
+                    <span>{t('settings')}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-border/50 my-2" />
@@ -196,7 +223,7 @@ export default function AppLayout() {
                   className="rounded-xl cursor-pointer text-destructive hover:bg-destructive/10 hover:text-destructive focus:bg-destructive/10 focus:text-destructive flex items-center gap-2"
                 >
                   <LogOut className="h-4 w-4" />
-                  <span>Déconnexion</span>
+                  <span>{t('logout')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

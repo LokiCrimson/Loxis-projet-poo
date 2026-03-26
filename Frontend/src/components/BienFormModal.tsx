@@ -16,6 +16,7 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 const bienSchema = z.object({
+  name: z.string().min(2, 'Le nom est requis'),
   categorie: z.string().min(1, 'La catégorie est requise'),
   type_bien: z.string().min(1, 'Le type est requis'),
   adresse: z.string().min(1, "L'adresse est requise"),
@@ -103,6 +104,7 @@ export function BienFormModal({ open, onOpenChange, bienId }: BienFormModalProps
   useEffect(() => {
     if (isEdit && existingBien) {
       reset({
+        name: existingBien.name || '',
         categorie: String(existingBien.category?.id || existingBien.category || ''),
         type_bien: String(existingBien.property_type?.id || existingBien.property_type || ''),
         adresse: existingBien.address || '',
@@ -122,6 +124,7 @@ export function BienFormModal({ open, onOpenChange, bienId }: BienFormModalProps
   const onSubmit = async (data: BienFormData) => {
     try {
       const payload = {
+        name: data.name,
         category: Number(data.categorie),
         property_type: Number(data.type_bien),
         address: data.adresse,
@@ -184,6 +187,17 @@ export function BienFormModal({ open, onOpenChange, bienId }: BienFormModalProps
             </TabsList>
 
             <TabsContent value="general" className="mt-4 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nom du bien *</Label>
+                <Input
+                  id="name"
+                  placeholder="Ex: Villa des Roses, Appartement T3 Centre..."
+                  {...register('name')}
+                  className={cn(errors.name && "border-destructive")}
+                />
+                {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+              </div>
+
               <div className="space-y-2">
                 <Label>Statut du bien</Label>
                 <div className="flex gap-2">

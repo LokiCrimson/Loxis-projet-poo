@@ -16,6 +16,7 @@ import {
   Activity,
   ChevronRight
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { 
   AreaChart, 
   Area, 
@@ -41,12 +42,15 @@ import { cn } from '@/lib/utils';
 const DONUT_COLORS = ['#10b981', '#cbd5e1', '#f59e0b'];
 
 const alertConfig = {
-  loyer_impaye: { bg: 'bg-destructive/5', border: 'border-destructive/20', icon: AlertTriangle, iconColor: 'text-destructive', label: 'Impayé' },
-  fin_bail: { bg: 'bg-amber-500/5', border: 'border-amber-500/20', icon: Clock, iconColor: 'text-amber-600', label: 'Fin de bail' },
-  revision_loyer: { bg: 'bg-blue-500/5', border: 'border-blue-500/20', icon: RefreshCw, iconColor: 'text-blue-600', label: 'Révision' },
+  UNPAID_RENT: { bg: 'bg-destructive/5', border: 'border-destructive/20', icon: AlertTriangle, iconColor: 'text-destructive', label: 'Impayé' },
+  LEASE_END: { bg: 'bg-amber-500/5', border: 'border-amber-500/20', icon: Clock, iconColor: 'text-amber-600', label: 'Fin de bail' },
+  RENT_REVISION: { bg: 'bg-blue-500/5', border: 'border-blue-500/20', icon: RefreshCw, iconColor: 'text-blue-600', label: 'Révision' },
+  PROPERTY_VACANT: { bg: 'bg-emerald-500/5', border: 'border-emerald-500/20', icon: Building2, iconColor: 'text-emerald-600', label: 'Vacant' },
+  SUSPICIOUS_ACTIVITY: { bg: 'bg-rose-500/5', border: 'border-rose-500/20', icon: Shield, iconColor: 'text-rose-600', label: 'Suspicion' },
 };
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
 
@@ -56,14 +60,14 @@ export default function Dashboard() {
   const { data: statuts, isLoading: statutsLoading } = useBienStatuts();
 
   const kpis = stats ? [
-    { label: 'Total Biens', value: stats.total_biens, icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50', trend: '+2', trendUp: true },
-    { label: 'Baux Actifs', value: stats.baux_actifs, icon: FileText, color: 'text-emerald-600', bg: 'bg-emerald-50', trend: '+1', trendUp: true },
-    { label: 'Encaissement', value: formatFCFA(stats.revenus_mois), icon: Wallet, color: 'text-indigo-600', bg: 'bg-indigo-50', trend: 'Ce mois', trendUp: true },
-    { label: 'Impayés', value: formatFCFA(stats.total_impayes), icon: AlertCircle, color: 'text-rose-600', bg: 'bg-rose-50', trend: 'Action requise', trendUp: false },
+    { label: t('total_assets'), value: stats.total_biens, icon: Building2, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-500/10', trend: '+2', trendUp: true },
+    { label: t('active_leases'), value: stats.baux_actifs, icon: FileText, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-500/10', trend: '+1', trendUp: true },
+    { label: t('collection'), value: formatFCFA(stats.revenus_mois), icon: Wallet, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-500/10', trend: t('this_month'), trendUp: true },
+    { label: t('unpaid'), value: formatFCFA(stats.total_impayes), icon: AlertCircle, color: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-rose-500/10', trend: t('action_required'), trendUp: false },
   ] : [];
 
   const donutData = statuts || [];
-  const totalBiens = statuts?.reduce((acc, curr) => acc + curr.value, 0) || 0;
+  const totalBiens = stats?.total_biens || statuts?.reduce((acc, curr) => acc + curr.value, 0) || 0;
 
   return (
     <div className="space-y-8 pb-10">
@@ -71,10 +75,10 @@ export default function Dashboard() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            Hello, {user?.first_name || 'Dave'} !
+            {t('hello')}, {user?.first_name || 'Dave'} !
           </h1>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
-            {isAdmin ? 'Plateforme Admin — Gestion globale' : 'Voici l\'état actuel de votre patrimoine immobilier.'}
+            {isAdmin ? t('admin_platform_desc') : t('owner_platform_desc')}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -82,9 +86,6 @@ export default function Dashboard() {
             <Calendar className="h-4 w-4 text-slate-400" />
             <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{formatDate(new Date().toISOString())}</span>
           </div>
-          <Button asChild className="rounded-2xl shadow-lg shadow-primary/20 font-bold px-6">
-            <Link to="/biens?action=add"><Plus className="mr-2 h-4 w-4" /> Nouveau Bien</Link>
-          </Button>
         </div>
       </div>
 
@@ -123,18 +124,18 @@ export default function Dashboard() {
           <CardHeader className="flex flex-row items-center justify-between pb-8">
             <div className="space-y-1">
               <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" /> Revenues
+                <TrendingUp className="h-5 w-5 text-primary" /> {t('revenue')}
               </CardTitle>
-              <CardDescription className="text-xs font-bold text-slate-400 uppercase tracking-wide">Évolution des encaissements sur 12 mois</CardDescription>
+              <CardDescription className="text-xs font-bold text-slate-400 uppercase tracking-wide">{t('monthly_collection')}</CardDescription>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-full border border-emerald-100">
                 <div className="h-2 w-2 rounded-full bg-emerald-500" />
-                <span className="text-[10px] font-black text-emerald-700 uppercase">Collectés</span>
+                <span className="text-[10px] font-black text-emerald-700 uppercase">{t('collection')}</span>
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1 bg-rose-50 rounded-full border border-rose-100">
                 <div className="h-2 w-2 rounded-full bg-rose-500" />
-                <span className="text-[10px] font-black text-rose-700 uppercase">Impayés</span>
+                <span className="text-[10px] font-black text-rose-700 uppercase">{t('unpaid')}</span>
               </div>
             </div>
           </CardHeader>
@@ -188,8 +189,8 @@ export default function Dashboard() {
             <Activity className="h-32 w-32" />
           </div>
           <CardHeader>
-            <CardTitle className="text-xl font-black tracking-tight italic">Status des Biens</CardTitle>
-            <CardDescription className="text-xs font-bold text-slate-400 uppercase tracking-widest">Répartition globale</CardDescription>
+            <CardTitle className="text-xl font-black tracking-tight italic">{t('distribution_by_status')}</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('global_repartition')}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center pt-4">
             {statutsLoading ? (
@@ -205,11 +206,18 @@ export default function Dashboard() {
                         cy="50%"
                         innerRadius={70}
                         outerRadius={95}
-                        paddingAngle={8}
+                        paddingAngle={4}
                         dataKey="value"
                         stroke="none"
+                        startAngle={90}
+                        endAngle={-270}
                       >
-                        {donutData.map((_, i) => <Cell key={i} fill={DONUT_COLORS[i]} />)}
+                        {donutData.map((entry, i) => (
+                           <Cell 
+                             key={i} 
+                             fill={entry.name === "Loués" || entry.name === "Loué" ? "#10b981" : entry.name === "Vacants" || entry.name === "Vacant" ? "#cbd5e1" : "#f59e0b"} 
+                           />
+                        ))}
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>
@@ -222,7 +230,7 @@ export default function Dashboard() {
                   {donutData.map((d, i) => (
                     <div key={i} className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
                       <div className="h-2 w-2 rounded-full" style={{ backgroundColor: DONUT_COLORS[i] }} />
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-200">{d.name}</span>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-200">{t(d.name.toLowerCase()) || d.name}</span>
                       <span className="text-[10px] font-bold text-indigo-400">{d.value}</span>
                     </div>
                   ))}
@@ -237,13 +245,13 @@ export default function Dashboard() {
       <div className="space-y-4">
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-2">
-            <h3 className="text-xl font-black tracking-tight text-slate-800 dark:text-white">Alertes récentes</h3>
+            <h3 className="text-xl font-black tracking-tight text-slate-800 dark:text-white">{t('active_alerts')}</h3>
             <Badge variant="destructive" className="rounded-full px-2 py-0 h-5 font-black text-[10px] animate-pulse">
-              {alertes?.filter(a => !a.lu).length || 0} NOUVELLES
+              {alertes?.filter(a => !a.is_read).length || 0} {t('new_uppercase')}
             </Badge>
           </div>
           <Link to="/alertes" className="group flex items-center gap-1 text-xs font-black text-primary uppercase tracking-widest">
-            Tout voir <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            {t('view_all')} <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
@@ -252,12 +260,24 @@ export default function Dashboard() {
             Array.from({ length: 3 }).map((_, i) => <LoadingSkeleton key={i} type="card" />)
           ) : alertes && alertes.length > 0 ? (
             alertes.slice(0, 3).map(alerte => {
-              const config = alertConfig[alerte.type] || alertConfig.loyer_impaye;
+              const config = alertConfig[alerte.alert_type as keyof typeof alertConfig] || alertConfig.UNPAID_RENT;
+              
+              // Déterminer le lien de redirection
+              let link = "/alertes";
+              if (alerte.related_entity_type === 'Property' && alerte.related_entity_id) {
+                link = `/biens/${alerte.related_entity_id}`;
+              } else if (alerte.related_entity_type === 'Lease' && alerte.related_entity_id) {
+                link = `/baux/${alerte.related_entity_id}`;
+              } else if (alerte.related_entity_type === 'RentPayment' && alerte.related_entity_id && alerte.metadata?.lease_id) {
+                link = `/baux/${alerte.metadata.lease_id}`;
+              }
+
               return (
-                <Link to={`/biens/${alerte.bien_id}`} key={alerte.id} className="group cursor-pointer">
+                <Link to={link} key={alerte.id} className="group cursor-pointer">
                   <div className={cn(
-                    "relative flex items-center gap-4 p-5 rounded-3xl border transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg",
-                    config.bg, config.border
+                    "relative flex items-center gap-4 p-5 rounded-3xl border transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg h-full",
+                    config.bg, config.border,
+                    !alerte.is_read && "border-l-4 border-l-primary shadow-sm bg-white dark:bg-slate-900"
                   )}>
                     <div className={cn("p-3 rounded-2xl", config.iconColor, "bg-white dark:bg-slate-900 shadow-sm")}>
                       <config.icon className="h-5 w-5" />
@@ -267,7 +287,7 @@ export default function Dashboard() {
                         <span className={cn("text-[9px] font-black uppercase tracking-[0.1em] px-2 py-0.5 rounded-full border", config.iconColor, config.border)}>
                           {config.label}
                         </span>
-                        <span className="text-[9px] font-bold text-slate-400">{formatDate(alerte.date)}</span>
+                        <span className="text-[9px] font-bold text-slate-400">{formatDate(alerte.created_at)}</span>
                       </div>
                       <p className="text-xs font-bold text-slate-700 dark:text-slate-300 line-clamp-2 leading-relaxed">
                         {alerte.message}
@@ -282,7 +302,7 @@ export default function Dashboard() {
             })
           ) : (
             <Card className="col-span-full border-dashed border-2 bg-transparent h-24 flex items-center justify-center">
-              <p className="text-sm font-bold text-slate-400 italic">Aucune alerte critique pour le moment.</p>
+              <p className="text-sm font-bold text-slate-400 italic">{t('no_critical_alerts')}</p>
             </Card>
           )}
         </div>

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { 
   Building2, Search, Filter, MapPin, Maximize2, 
   DoorOpen, CheckCircle2, AlertCircle, Info, Send,
-  ChevronLeft, ChevronRight, Bookmark, Calendar, Star, MessageSquare
+  ChevronLeft, ChevronRight, Bookmark, Calendar, Star, MessageSquare, Eye
 } from 'lucide-react';
+import { format } from 'date-fns';
 import { usePublicBiens, useCreateReservation, useReservations } from '@/hooks/use-reservations';
 import { useCreateReview } from '@/hooks/use-reviews';
 import { Button } from '@/components/ui/button';
@@ -71,6 +73,7 @@ const Carousel = ({ images }: { images: any[] }) => {
 };
 
 export default function ReserverBienPage() {
+  const navigate = useNavigate();
   const { data: biens, isLoading } = usePublicBiens();
   const { data: myReservations } = useReservations();
   const [searchTerm, setSearchTerm] = useState('');
@@ -87,7 +90,12 @@ export default function ReserverBienPage() {
 
   const handleReserve = () => {
     if (selectedBien) {
-      createMutation.mutate({ property: selectedBien.id, message }, {
+      createMutation.mutate({ 
+          property: selectedBien.id, 
+          message,
+          proposed_start_date: format(new Date(), 'yyyy-MM-dd'),
+          proposed_end_date: format(new Date(new Date().setFullYear(new Date().getFullYear() + 1)), 'yyyy-MM-dd')
+      }, {
         onSuccess: () => {
           setSelectedBien(null);
           setMessage('');
@@ -211,24 +219,31 @@ export default function ReserverBienPage() {
                      {bien.description || "Aucune description fournie pour ce bien."}
                   </p>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="gap-2">
+                  <Button 
+                    variant="outline"
+                    className="flex-1 rounded-2xl h-12 border-slate-200 font-bold hover:bg-slate-50 transition-all gap-2"
+                    onClick={() => navigate(`/reserver/${bien.id}`)}
+                  >
+                    <Eye className="h-4 w-4" />
+                    Détails
+                  </Button>
                   {status ? (
                     <div className={cn(
-                      "w-full flex items-center justify-center gap-2 p-3 rounded-2xl font-black text-xs uppercase tracking-widest",
+                      "flex-[2] flex items-center justify-center gap-2 p-3 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center",
                       status === 'PENDING' && "bg-amber-50 text-amber-600 border border-amber-100",
                       status === 'ACCEPTED' && "bg-emerald-50 text-emerald-600 border border-emerald-100",
                       status === 'REJECTED' && "bg-rose-50 text-rose-600 border border-rose-100",
                     )}>
-                      {status === 'PENDING' ? <Calendar className="h-4 w-4" /> : <Info className="h-4 w-4" />}
-                      {status === 'PENDING' ? "Demande en attente" : status === 'ACCEPTED' ? "Réservation acceptée" : "Demande refusée"}
+                      {status === 'PENDING' ? "En attente" : status === 'ACCEPTED' ? "Acceptée" : "Refusée"}
                     </div>
                   ) : (
                     <Button 
-                      className="w-full rounded-2xl h-12 bg-slate-900 hover:bg-indigo-600 text-white font-black shadow-xl shadow-slate-200 transition-all gap-2"
+                      className="flex-[2] rounded-2xl h-12 bg-slate-900 hover:bg-indigo-600 text-white font-black shadow-xl shadow-slate-200 transition-all gap-2"
                       onClick={() => setSelectedBien(bien)}
                     >
                       <Bookmark className="h-4 w-4" />
-                      Réserver ce bien
+                      Réserver
                     </Button>
                   )}
                 </CardFooter>

@@ -40,3 +40,54 @@ export function useCreateReview() {
     },
   });
 }
+
+export function useReplyToReview() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationKey: ['replyToReview'],
+    mutationFn: ({ reviewId, reply }: { reviewId: number; reply: string; propertyId: number }) =>
+      reviewsService.replyToReview(reviewId, reply),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['reviews', variables.propertyId] });
+      toast({
+        title: 'Réponse envoyée',
+        description: 'Votre réponse a bien été publiée.',
+      });
+    },
+    onError: () => {
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de répondre à cet avis.',
+        variant: 'destructive',
+      });
+    },
+  });
+}
+
+export function useReportReview() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationKey: ['reportReview'],
+    mutationFn: ({ reviewId, reason, details, propertyId }: { reviewId: number; reason: string; details?: string; propertyId: number }) =>
+      reviewsService.reportReview({ review: reviewId, reason, details }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['reviews', variables.propertyId] });
+      toast({
+        title: 'Signalement envoyé',
+        description: 'Merci, nous allons examiner cet avis.',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.non_field_errors?.[0] || 'Impossible de signaler cet avis.';
+      toast({
+        title: 'Erreur',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+    },
+  });
+}

@@ -4,8 +4,10 @@ export function formatFCFA(amount: number | string): string {
   return Math.round(val).toLocaleString('fr-FR').replace(/\s/g, ' ') + ' FCFA';
 }
 
-export function formatDate(dateStr: string): string {
+export function formatDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return 'N/A';
   const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return 'N/A';
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 

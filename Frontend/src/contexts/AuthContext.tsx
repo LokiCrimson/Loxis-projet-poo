@@ -10,13 +10,14 @@ export interface AuthUser {
   email: string;
   telephone: string;
   role: UserRole;
+  is_two_factor_enabled?: boolean;
 }
 
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, otp?: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
   updateUser: (data: Partial<AuthUser>) => void;
@@ -52,7 +53,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             nom: res.data.last_name || res.data.nom || '',
             prenom: res.data.first_name || res.data.prenom || '',
             telephone: res.data.phone || res.data.telephone || '',
-            role: res.data.role
+            role: res.data.role,
+            is_two_factor_enabled: res.data.is_two_factor_enabled
           };
           setUser(userData as AuthUser);
           localStorage.setItem('loxis_user', JSON.stringify(userData));
@@ -66,8 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth();
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
-    const res = await apiLogin(email, password);
+  const login = useCallback(async (email: string, password: string, otp?: string) => {
+    const res = await apiLogin(email, password, otp);
     const token = res.data.access || res.data.token; // Handle Django SimpleJWT structure
     if (token) {
       localStorage.setItem('token', token);
@@ -78,7 +80,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         nom: userRes.data.last_name || userRes.data.nom || '',
         prenom: userRes.data.first_name || userRes.data.prenom || '',
         telephone: userRes.data.phone || userRes.data.telephone || '',
-        role: userRes.data.role
+        role: userRes.data.role,
+        is_two_factor_enabled: userRes.data.is_two_factor_enabled
       };
       setUser(userData as AuthUser);
       localStorage.setItem('loxis_user', JSON.stringify(userData));

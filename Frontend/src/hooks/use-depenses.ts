@@ -19,9 +19,18 @@ export const useCreateExpense = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: Record<string, unknown>) => createExpense(data),
-    onSuccess: () => {
+    onSuccess: (_resp, variables) => {
       qc.invalidateQueries({ queryKey: ['expenses'] });
-      qc.invalidateQueries({ queryKey: ['depenses'] }); // For compatibility
+      qc.invalidateQueries({ queryKey: ['depenses'] });
+
+      const bienId = Number(variables?.bien_id);
+      if (!Number.isNaN(bienId) && bienId > 0) {
+        qc.invalidateQueries({ queryKey: ['depenses', bienId] });
+      }
+
+      qc.invalidateQueries({ queryKey: ['compta-resume'] });
+      qc.invalidateQueries({ queryKey: ['compta-mensuel'] });
+      qc.invalidateQueries({ queryKey: ['compta-par-bien'] });
     },
   });
 };

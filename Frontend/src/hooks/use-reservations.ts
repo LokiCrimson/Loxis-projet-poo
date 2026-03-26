@@ -5,7 +5,7 @@ import { useToast } from './use-toast';
 export function useReservations() {
   return useQuery({
     queryKey: ['reservations'],
-    queryFn: () => reservationsService.getReservations().then(res => res.data),
+    queryFn: () => reservationsService.getReservations(),
   });
 }
 

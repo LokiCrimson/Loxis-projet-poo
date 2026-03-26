@@ -1,119 +1,200 @@
 import { Link } from 'react-router-dom';
-import { Building2, FileText, Receipt, ArrowRight, CheckCircle, Menu, X } from 'lucide-react';
+import { 
+  Building2, 
+  FileText, 
+  ArrowRight, 
+  Menu, 
+  X, 
+  Shield, 
+  BarChart3, 
+  Clock, 
+  Activity, 
+  TrendingUp, 
+  CheckCircle2, 
+  ChevronRight,
+  Wallet,
+  Zap,
+  Target
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { cn } from '@/lib/utils';
 
 const features = [
-  { icon: Building2, title: 'Gestion des biens', desc: 'Centralisez tous vos biens immobiliers, suivez leur statut et gérez les détails en un clic.' },
-  { icon: FileText, title: 'Suivi des baux & paiements', desc: 'Créez vos baux, suivez les loyers et recevez des alertes automatiques en cas d\'impayé.' },
-  { icon: Receipt, title: 'Quittances automatiques', desc: 'Générez et envoyez les quittances de loyer automatiquement à vos locataires.' },
-];
-
-const steps = [
-  { num: '01', title: 'Créez votre compte', desc: 'Inscrivez-vous gratuitement en quelques secondes.' },
-  { num: '02', title: 'Ajoutez vos biens', desc: 'Renseignez vos propriétés avec tous les détails nécessaires.' },
-  { num: '03', title: 'Gérez tout en un clic', desc: 'Baux, paiements, quittances — tout est centralisé.' },
+  { 
+    icon: Building2, 
+    title: 'Patrimoine Immobilier', 
+    desc: 'Visualisez vos unités (Villas, Appartements) avec des indicateurs de statut temps réel comme sur votre dashboard.',
+    color: 'text-blue-600',
+    bg: 'bg-blue-50 dark:bg-blue-500/10'
+  },
+  { 
+    icon: TrendingUp, 
+    title: 'Analyses de Revenus', 
+    desc: 'Suivez vos encaissements mensuels et comparez vos revenus réels face aux impayés avec nos graphiques AreaChart.',
+    color: 'text-indigo-600',
+    bg: 'bg-indigo-50 dark:bg-indigo-500/10'
+  },
+  { 
+    icon: FileText, 
+    title: 'Gestion des Baux', 
+    desc: 'Centralisation complète des contrats, dates d\'échéance et alertes de fin de bail pour une gestion sans stress.',
+    color: 'text-emerald-600',
+    bg: 'bg-emerald-50 dark:bg-emerald-500/10'
+  },
+  { 
+    icon: Wallet, 
+    title: 'Comptabilité Automatisée', 
+    desc: 'Génération automatique de quittances et suivi des flux de trésorerie mensuels par exercice comptable.',
+    color: 'text-rose-600',
+    bg: 'bg-rose-50 dark:bg-rose-500/10'
+  }
 ];
 
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Building2 className="h-7 w-7 text-primary" />
-            <span className="text-xl font-bold text-primary">LOXIS</span>
+    <div className="min-h-screen bg-white dark:bg-slate-950 font-sans selection:bg-primary/10">
+      {/* HEADER - Inspiré de la Welcome Bar du Dashboard */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md dark:bg-slate-950/80 border-b border-slate-100 dark:border-slate-800">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-white shadow-xl shadow-primary/20">
+              <Building2 className="h-7 w-7" />
+            </div>
+            <span className="text-2xl font-black tracking-tighter text-slate-900 dark:text-white">LOXIS</span>
           </Link>
-          <div className="hidden gap-3 sm:flex">
-            <ThemeToggle />
-            <Button variant="outline" asChild><Link to="/login">Se connecter</Link></Button>
-            <Button asChild><Link to="/register">S'inscrire</Link></Button>
+          
+          <div className="hidden md:flex items-center gap-8">
+            <div className="flex gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+              <a href="#features" className="hover:text-primary transition-colors">Fonctionnalités</a>
+              <a href="#steps" className="hover:text-primary transition-colors">Méthode</a>
+            </div>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <Button variant="ghost" asChild className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
+                <Link to="/login">Connexion</Link>
+              </Button>
+              <Button asChild className="rounded-2xl h-11 px-8 font-black uppercase tracking-widest text-[11px] shadow-lg shadow-primary/20 hover:-translate-y-0.5 transition-transform">
+                <Link to="/register">S'inscrire</Link>
+              </Button>
+            </div>
           </div>
-          <button className="sm:hidden" onClick={() => setMenuOpen(!menuOpen)}>
+
+          <button className="md:hidden p-2 text-slate-900 dark:text-slate-100" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
+
         {menuOpen && (
-          <div className="flex flex-col gap-2 border-t px-4 py-3 sm:hidden">
-            <div className="flex justify-center py-2">
-              <ThemeToggle />
+          <div className="md:hidden border-t border-slate-100 bg-white p-6 dark:bg-slate-900 dark:border-slate-800 animate-in slide-in-from-top duration-300">
+            <div className="flex flex-col gap-6 text-[10px] font-black uppercase tracking-widest">
+              <Link to="/login" onClick={() => setMenuOpen(false)}>Connexion</Link>
+              <Link to="/register" onClick={() => setMenuOpen(false)}>Créer un compte</Link>
             </div>
-            <Button variant="outline" asChild className="w-full"><Link to="/login">Se connecter</Link></Button>
-            <Button asChild className="w-full"><Link to="/register">S'inscrire</Link></Button>
           </div>
         )}
       </nav>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
-        <div className="relative mx-auto max-w-6xl px-4 py-20 text-center sm:py-32">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            Gérez votre patrimoine immobilier
-            <span className="block text-primary">en toute sérénité</span>
+      {/* HERO SECTION - Inspiré des KPI Cards */}
+      <section className="relative px-6 py-24 lg:py-40 overflow-hidden">
+        {/* Abstract Background Element (comme dans le donut card) */}
+        <div className="absolute top-0 right-0 p-20 opacity-[0.03] -z-10 dark:opacity-[0.05]">
+          <Activity className="h-[600px] w-[600px] text-slate-900" />
+        </div>
+
+        <div className="mx-auto max-w-7xl text-center">
+          <div className="mx-auto mb-10 flex w-fit items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-900 px-5 py-2 border border-slate-200 dark:border-slate-800">
+            <Zap className="h-4 w-4 text-primary fill-primary" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400">Version 2.0 • Togo 🇹🇬</span>
+          </div>
+
+          <h1 className="text-6xl font-black tracking-tighter text-slate-900 sm:text-8xl lg:text-9xl dark:text-white leading-[0.9]">
+            Pilotez votre <br />
+            <span className="text-primary italic">patrimoine</span>.
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            LOXIS simplifie la gestion locative : biens, baux, paiements et quittances, tout en un seul endroit. Conçu pour les propriétaires en Afrique.
+
+          <p className="mx-auto mt-12 max-w-2xl text-lg font-bold leading-relaxed text-slate-400 dark:text-slate-500 uppercase tracking-tight">
+            L'ERP immobilier de référence. Gérez vos baux, vos revenus et vos impayés avec la précision d'un dashboard financier.
           </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button size="lg" asChild className="gap-2">
-              <Link to="/register">Créer un compte <ArrowRight className="h-4 w-4" /></Link>
+
+          <div className="mt-16 flex flex-col items-center justify-center gap-6 sm:flex-row">
+            <Button size="lg" asChild className="h-16 rounded-[2rem] px-12 text-sm font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 hover:shadow-primary/40 transition-all hover:-translate-y-1">
+              <Link to="/register">Démarrer l'audit gratuit</Link>
             </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link to="/login">Se connecter</Link>
-            </Button>
+            <div className="flex items-center gap-2 text-xs font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest">
+              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              SÉCURISÉ PAR DOUBLE AUTHENTIFICATION 2FA
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="border-t bg-muted/30 py-20">
-        <div className="mx-auto max-w-6xl px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold text-foreground">Tout ce qu'il vous faut</h2>
-          <div className="grid gap-8 md:grid-cols-3">
-            {features.map(f => (
-              <div key={f.title} className="rounded-xl border bg-card p-8 shadow-sm transition-shadow hover:shadow-md">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <f.icon className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold text-foreground">{f.title}</h3>
-                <p className="text-sm text-muted-foreground">{f.desc}</p>
+      {/* FEATURES GRID - Inspiré des KPI Cards */}
+      <section id="features" className="mx-auto max-w-7xl px-6 py-32">
+        <div className="mb-20">
+          <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-primary mb-4">Systèmes Intégrés</h2>
+          <p className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Expertise de gestion digitale.</p>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          {features.map((f, i) => (
+            <div key={i} className="group relative bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-2">
+              <div className={cn("inline-flex p-4 rounded-2xl mb-8 transition-transform group-hover:scale-110 duration-500", f.bg, f.color)}>
+                <f.icon className="h-8 w-8" />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section className="py-20">
-        <div className="mx-auto max-w-6xl px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold text-foreground">Comment ça marche ?</h2>
-          <div className="grid gap-8 md:grid-cols-3">
-            {steps.map(s => (
-              <div key={s.num} className="text-center">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-xl font-bold text-primary-foreground">
-                  {s.num}
-                </div>
-                <h3 className="mb-2 text-lg font-semibold text-foreground">{s.title}</h3>
-                <p className="text-sm text-muted-foreground">{s.desc}</p>
+              <h3 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white mb-4 italic">{f.title}</h3>
+              <p className="text-sm font-bold text-slate-400 leading-relaxed uppercase tracking-tight">{f.desc}</p>
+              
+              <div className="mt-8">
+                <div className="h-1 w-12 rounded-full bg-slate-100 dark:bg-slate-800 group-hover:w-full group-hover:bg-primary transition-all duration-700" />
               </div>
-            ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CALL TO ACTION - Inspiré de la Donut Card (Dark Mode) */}
+      <section className="mx-auto max-w-7xl px-6 pb-32">
+        <div className="relative rounded-[3rem] bg-slate-900 p-12 lg:p-24 overflow-hidden text-center">
+          <div className="absolute top-0 left-0 p-12 opacity-5">
+            <Target className="h-64 w-64 text-white" />
+          </div>
+          
+          <div className="relative z-10 space-y-8">
+            <h2 className="text-4xl lg:text-7xl font-black tracking-tighter text-white leading-none">
+              Prêt à passer à <br className="hidden md:block" />
+              la gestion de <span className="text-primary italic underline decoration-white/20 underline-offset-8">demain</span> ?
+            </h2>
+            <p className="mx-auto max-w-xl text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">
+              Utilisé par des centaines de bailleurs pour sécuriser leurs flux de trésorerie.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button size="lg" asChild className="h-16 rounded-2xl bg-white text-slate-950 hover:bg-slate-200 px-10 text-xs font-black uppercase tracking-widest shadow-xl">
+                <Link to="/register">Rejoindre Loxis</Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild className="h-16 rounded-2xl border-white/20 text-white hover:bg-white/10 px-10 text-xs font-black uppercase tracking-widest backdrop-blur-sm">
+                <Link to="/login">Espace Client</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t bg-muted/30 py-8">
-        <div className="mx-auto max-w-6xl px-4 text-center">
-          <div className="flex items-center justify-center gap-2">
-            <Building2 className="h-5 w-5 text-primary" />
-            <span className="font-bold text-primary">LOXIS</span>
+      {/* FOOTER */}
+      <footer className="border-t border-slate-50 py-16 text-center dark:border-slate-900">
+        <div className="flex flex-col items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+              <Building2 className="h-4 w-4 text-slate-400" />
+            </div>
+            <span className="text-lg font-black tracking-tighter text-slate-400 uppercase">LOXIS 2026</span>
           </div>
-          <p className="mt-2 text-sm text-muted-foreground">© {new Date().getFullYear()} LOXIS. Tous droits réservés.</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-300 dark:text-slate-800">
+            Propulsé par Gemini 3 Flash & GitHub Copilot
+          </p>
         </div>
       </footer>
     </div>

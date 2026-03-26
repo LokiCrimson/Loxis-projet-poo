@@ -1,8 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getBaux, getBailById, createBail, resilierBail } from '@/services/baux.service';
 
-export const useBaux = (params?: Record<string, string>) =>
-  useQuery({ queryKey: ['baux', params], queryFn: () => getBaux(params).then(r => r.data) });
+export const useBaux = (params?: Record<string, string>) => {
+  const isParamsValid = !params || Object.values(params).every(v => v !== 'NaN' && v !== 'undefined');
+  return useQuery({ 
+    queryKey: ['baux', params], 
+    queryFn: () => getBaux(params).then(r => r.data),
+    enabled: isParamsValid
+  });
+};
 
 export const useBail = (id: number) =>
   useQuery({ queryKey: ['baux', id], queryFn: () => getBailById(id).then(r => r.data), enabled: !!id });

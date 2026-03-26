@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,6 +45,9 @@ interface Props {
 
 export function BailFormModal({ open, onOpenChange, defaultBienId }: Props) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const prefill = location.state?.prefill;
+
   const createMut = useCreateBail();
   const { toast } = useToast();
   const { data: biens = [] } = useBiens(); // On retire le filtre statut: 'vacant' pour voir tous les biens
@@ -56,10 +59,22 @@ export function BailFormModal({ open, onOpenChange, defaultBienId }: Props) {
   });
 
   useEffect(() => {
-    if (open && defaultBienId) {
-      setValue('bien_id', defaultBienId);
+    if (open) {
+      if (prefill) {
+        reset({
+          bien_id: prefill.bien_id || defaultBienId,
+          locataire_id: prefill.locataire_id,
+          date_debut: prefill.date_debut,
+          loyer_initial: Number(prefill.loyer_initial),
+          loyer_actuel: Number(prefill.loyer_actuel),
+          charges: Number(prefill.charges),
+          jour_paiement: prefill.jour_paiement,
+        });
+      } else if (defaultBienId) {
+        setValue('bien_id', defaultBienId);
+      }
     }
-  }, [open, defaultBienId, setValue]);
+  }, [open, prefill, defaultBienId, setValue, reset]);
 
   const loyerInitial = watch('loyer_initial');
   const bienId = watch('bien_id');
@@ -72,7 +87,8 @@ export function BailFormModal({ open, onOpenChange, defaultBienId }: Props) {
 
   // Mettre à jour automatiquement le loyer et les charges quand on change de bien
   useEffect(() => {
-    if (bienId) {
+    // On ne veut pas écraser les données de pré-remplissage lors de l'initialisation
+    if (bienId && !prefill) {
       const bien = biens.find((b: any) => b.id === bienId);
       if (bien) {
         setValue('loyer_initial', Number(bien.base_rent_hc) || 0);
@@ -81,7 +97,7 @@ export function BailFormModal({ open, onOpenChange, defaultBienId }: Props) {
         setValue('depot_garantie_verse', Number(bien.guarantee_deposit) || 0);
       }
     }
-  }, [bienId, biens, setValue]);
+  }, [bienId, biens, setValue, prefill]);
 
   const onSubmit = (data: BailFormData) => {
     // Transformer date_fin vide en null pour le backend

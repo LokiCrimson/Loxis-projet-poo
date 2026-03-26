@@ -1,4 +1,4 @@
-import api from './api';
+﻿import api from './api';
 
 export interface RentalMessage {
   id: number;
@@ -47,10 +47,6 @@ export const updateReservationStatus = async (id: number, status: 'ACCEPTED' | '
   return api.patch<Reservation>(`/baux/reservations/${id}/`, { status });
 };
 
-export const acceptReservation = async (id: number) => {
-  return (await api.post<{ message: string, lease_data: any }>(`/baux/reservations/${id}/accept/`)).data;
-};
-
 export const deleteReservation = async (id: number) => {
   return api.delete(`/baux/reservations/${id}/`);
 };
@@ -64,6 +60,6 @@ export const getMessages = async (reservationId: number) => {
 };
 
 export const getPublicBiens = async () => {
-  // Les locataires voient tous les biens VACANT pour réserver
+  // Les locataires voient tous les biens VACANT pour rÃ©server
   return api.get('/immobilier/biens/?statut=VACANT');
 };

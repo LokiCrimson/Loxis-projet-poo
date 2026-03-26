@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -37,6 +37,7 @@ export function ExpenseFormModal({ open, onOpenChange, bienId }: ExpenseFormModa
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       bien_id: bienId,
+      categorie_id: '',
       date_depense: new Date().toISOString().split('T')[0],
       deductible: false,
     },
@@ -52,9 +53,20 @@ export function ExpenseFormModal({ open, onOpenChange, bienId }: ExpenseFormModa
       onOpenChange(false);
       reset();
     } catch (e: any) {
+      const apiError = e?.response?.data;
+      const errorMessage =
+        apiError?.detail ||
+        apiError?.error ||
+        (apiError && typeof apiError === 'object'
+          ? Object.entries(apiError)
+              .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : String(msgs)}`)
+              .join(' | ')
+          : null) ||
+        'Une erreur est survenue lors de l\'enregistrement.';
+
       toast({ 
         title: 'Erreur', 
-        description: e.response?.data?.detail || 'Une erreur est survenue lors de l\'enregistrement.', 
+        description: errorMessage,
         variant: 'destructive' 
       });
     }
@@ -65,6 +77,9 @@ export function ExpenseFormModal({ open, onOpenChange, bienId }: ExpenseFormModa
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Ajouter une dépense</DialogTitle>
+          <DialogDescription>
+            Renseignez les informations ci-dessous pour enregistrer une nouvelle dépense.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
           <div className="space-y-2">
@@ -80,7 +95,7 @@ export function ExpenseFormModal({ open, onOpenChange, bienId }: ExpenseFormModa
                 control={control}
                 name="categorie_id"
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value ?? ''}>
                     <SelectTrigger>
                       <SelectValue placeholder="Catégorie" />
                     </SelectTrigger>
