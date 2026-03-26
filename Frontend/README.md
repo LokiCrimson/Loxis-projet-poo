@@ -4,6 +4,19 @@
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
 
+## Mise à jour (26/03/2026) - Reservations et Baux
+
+- **Dashboard Propriétaire enrichi** :
+  - Intégration de la gestion directe des demandes de réservation (`OwnerReservationsPage.tsx`).
+  - Système de chat temps réel avec les futurs locataires.
+  - Action "Accepter" qui déclenche automatiquement la transition vers le bail.
+- **Workflow Fluide de Création de Bail** :
+  - Redirection automatique avec passage d'état (`useLocation`) vers le module Baux.
+  - Auto-remplissage du formulaire `BailFormModal.tsx` via `react-hook-form` (`reset`).
+  - Gestion des statuts visuels (badges) mis à jour instantanément.
+- **Services API** :
+  - Extension du `reservations.service.ts` pour supporter les actions d'acceptation et de pré-remplissage.
+
 ## How can I edit this code?
 
 There are several ways of editing your application.
