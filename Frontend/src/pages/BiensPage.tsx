@@ -27,7 +27,7 @@ import { Badge } from '@/components/ui/badge';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { EmptyState } from '@/components/EmptyState';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { useBiens, useDeleteBien } from '@/hooks/use-biens';
+import { useBiens, useDeleteBien, useCategories } from '@/hooks/use-biens';
 import { formatFCFA } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { BienFormModal } from '@/components/BienFormModal';
@@ -51,6 +51,7 @@ export default function BiensPage() {
   if (categorie !== 'tous') params.categorie = categorie;
 
   const { data: biens, isLoading } = useBiens(params);
+  const { data: categoriesReal } = useCategories();
   const deleteMutation = useDeleteBien();
 
   const handleDelete = () => {
@@ -110,10 +111,11 @@ export default function BiensPage() {
             </SelectTrigger>
             <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
               <SelectItem value="tous" className="rounded-xl font-bold py-3 px-4">{t('all_categories')}</SelectItem>
-              <SelectItem value="Appartement" className="rounded-xl font-bold py-3 px-4 text-indigo-600">{t('apartment')}</SelectItem>
-              <SelectItem value="Maison" className="rounded-xl font-bold py-3 px-4 text-emerald-600">{t('house')}</SelectItem>
-              <SelectItem value="Bureau" className="rounded-xl font-bold py-3 px-4 text-blue-600">{t('office')}</SelectItem>
-              <SelectItem value="Local" className="rounded-xl font-bold py-3 px-4 text-slate-600">{t('commercial_local')}</SelectItem>
+              {categoriesReal?.map((cat: any) => (
+                <SelectItem key={cat.id} value={cat.name} className="rounded-xl font-bold py-3 px-4">
+                  {cat.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
