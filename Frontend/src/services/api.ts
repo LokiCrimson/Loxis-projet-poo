@@ -19,48 +19,52 @@ api.interceptors.response.use(
   (error) => {
     const { response } = error;
     
+    // Ignore les erreurs 401 pour la page de login pour éviter les boucles de redirection
+    // et les messages d'erreur automatiques sur les tentatives de connexion échouées
+    // (on gère les erreurs de login manuellement dans LoginPage.tsx)
+    const isLoginPath = window.location.pathname.includes('/login') || error.config?.url?.includes('/token/');
+
     if (response) {
-      // 401: Unauthorized - Redirect to login
       if (response.status === 401) {
-        localStorage.removeItem('token');
-        if (!window.location.pathname.includes('/login')) {
+        if (!isLoginPath) {
+          localStorage.removeItem('token');
           window.location.href = '/login';
         }
       } 
-      // 403: Forbidden
       else if (response.status === 403) {
         toast({
           title: "Accès refusé",
-          description: "Vous n'avez pas les permissions nécessaires pour cette action.",
+          description: "Vous n'avez pas les permissions nécessaires.",
           variant: "destructive",
         });
       }
-      // 400: Bad Request (Validation errors)
-      else if (response.status === 400) {
+      else if (response.status === 400 && !isLoginPath) {
         const errors = response.data;
-        const firstError = typeof errors === 'object' 
-          ? Object.values(errors)[0] 
-          : "Données invalides";
+        let errorMsg = "Données invalides";
+        
+        if (typeof errors === 'object' && errors !== null) {
+          const values = Object.values(errors);
+          const first = values[0];
+          errorMsg = Array.isArray(first) ? first[0] : String(first || errorMsg);
+        }
         
         toast({
-          title: "Erreur de validation",
-          description: Array.isArray(firstError) ? firstError[0] : String(firstError),
+          title: "Erreur",
+          description: errorMsg,
           variant: "destructive",
         });
       }
-      // 500: Server Error
       else if (response.status >= 500) {
         toast({
           title: "Erreur serveur",
-          description: "Une erreur interne est survenue sur le serveur Loxis.",
+          description: "Le service Loxis rencontre une difficulté technique.",
           variant: "destructive",
         });
       }
-    } else {
-      // Network Error
+    } else if (!isLoginPath) {
       toast({
-        title: "Erreur réseau",
-        description: "Impossible de contacter le serveur. Vérifiez votre connexion.",
+        title: "Loxis Hors Ligne",
+        description: "Connexion au serveur impossible.",
         variant: "destructive",
       });
     }

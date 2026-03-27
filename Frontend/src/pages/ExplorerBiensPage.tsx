@@ -16,8 +16,11 @@ import { cn } from '@/lib/utils';
 import { EmptyState } from '@/components/EmptyState';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { format } from 'date-fns';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Carousel = ({ images }: { images: any[] }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   if (!images || images.length === 0) {
     return (
       <div className="flex aspect-video w-full items-center justify-center bg-slate-100 text-slate-400">
@@ -25,9 +28,56 @@ const Carousel = ({ images }: { images: any[] }) => {
       </div>
     );
   }
+
+  const nextSlide = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
+  const prevSlide = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
   return (
-    <div className="relative aspect-video overflow-hidden rounded-t-xl">
-      <img src={images[0].image} alt="Bien" className="h-full w-full object-cover" />
+    <div className="relative aspect-video overflow-hidden rounded-t-[2rem] group/carousel">
+      <img 
+        src={images[currentIndex].image} 
+        alt={`Photo ${currentIndex + 1}`} 
+        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
+      />
+      
+      {images.length > 1 && (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent opacity-0 group-hover/carousel:opacity-100 transition-opacity" />
+          
+          <button 
+            onClick={prevSlide}
+            className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-slate-900 opacity-0 group-hover/carousel:opacity-100 transition-all hover:bg-white active:scale-90"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+          
+          <button 
+            onClick={nextSlide}
+            className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-slate-900 opacity-0 group-hover/carousel:opacity-100 transition-all hover:bg-white active:scale-90"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 p-1.5 rounded-full bg-black/20 backdrop-blur-sm">
+            {images.map((_, i) => (
+              <div 
+                key={i} 
+                className={cn(
+                  "h-1.5 rounded-full transition-all duration-300",
+                  i === currentIndex ? "w-6 bg-white" : "w-1.5 bg-white/50"
+                )} 
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };

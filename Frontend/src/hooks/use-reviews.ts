@@ -5,7 +5,7 @@ import { useToast } from './use-toast';
 export function useReviews(propertyId: number) {
   return useQuery({
     queryKey: ['reviews', propertyId],
-    queryFn: () => reviewsService.getReviews(propertyId).then(res => res.data),
+    queryFn: () => reviewsService.getReviews(propertyId),
     enabled: !!propertyId,
   });
 }

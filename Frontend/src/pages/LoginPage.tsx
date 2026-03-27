@@ -35,9 +35,17 @@ export default function LoginPage() {
     } catch (err: any) {
       if (err.response?.data?.["2fa_required"]) {
         setIs2faRequired(true);
-        toast({ title: t('fa_required_title'), description: t('fa_required_desc') });
+        toast({ title: "Sécurité Double Facteur", description: "Veuillez entrer le code de votre application d'authentification." });
+      } else if (err.response?.status === 401) {
+        toast({ title: "Identification échouée", description: "Email ou mot de passe incorrect. Veuillez vérifier vos identifiants.", variant: 'destructive' });
+      } else if (err.response?.status === 404) {
+        toast({ title: "Compte introuvable", description: "Cette adresse email n'est associée à aucun compte Loxis.", variant: 'destructive' });
+      } else if (err.response?.status === 403) {
+        toast({ title: "Compte bloqué", description: "Votre compte est temporairement désactivé. Contactez l'administrateur.", variant: 'destructive' });
+      } else if (!err.response) {
+        toast({ title: "Mode Hors-ligne", description: "Impossible de se connecter. Vérifiez votre connexion internet.", variant: 'destructive' });
       } else {
-        toast({ title: t('error'), description: err.response?.data?.detail || err.message || t('invalid_credentials'), variant: 'destructive' });
+        toast({ title: "Problème technique", description: "Une erreur inattendue est survenue lors de la connexion. Réessayez plus tard.", variant: 'destructive' });
       }
     } finally {
       setLoading(false);

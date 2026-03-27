@@ -50,10 +50,21 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register({ nom: form.nom, prenom: form.prenom, email: form.email, telephone: form.telephone, mot_de_passe: form.password, role: form.role });
-      toast({ title: 'Compte créé avec succès !', description: 'Vous pouvez maintenant vous connecter.' });
+      toast({ title: 'Bienvenue chez Loxis !', description: 'Votre compte a été créé. Vous pouvez maintenant vous connecter.' });
       navigate('/login');
     } catch (err: any) {
-      toast({ title: 'Erreur', description: err.message, variant: 'destructive' });
+      if (err.response?.status === 400) {
+        const data = err.response.data;
+        if (data.email) {
+          toast({ title: "Email déjà utilisé", description: "Cette adresse email possède déjà un compte Loxis.", variant: 'destructive' });
+        } else if (data.telephone) {
+          toast({ title: "Numéro de téléphone invalide", description: "Veuillez vérifier le format de votre numéro de téléphone.", variant: 'destructive' });
+        } else {
+          toast({ title: "Inscription impossible", description: "Certaines informations fournies sont invalides.", variant: 'destructive' });
+        }
+      } else {
+        toast({ title: 'Erreur d\'inscription', description: "Une erreur est survenue lors de la création de votre compte.", variant: 'destructive' });
+      }
     } finally {
       setLoading(false);
     }

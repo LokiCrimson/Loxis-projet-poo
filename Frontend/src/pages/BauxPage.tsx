@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
+﻿import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link, useLocation } from "react-router-dom";
 import { 
   Plus, 
   Search, 
@@ -12,30 +12,30 @@ import {
   Calendar, 
   Home, 
   ChevronRight
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
-import { StatusBadge } from '@/components/StatusBadge';
-import { LoadingSkeleton } from '@/components/LoadingSkeleton';
-import { EmptyState } from '@/components/EmptyState';
-import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { useBaux, useResilierBail, useToggleSuiviBail } from '@/hooks/use-baux';
-import { formatFCFA, formatDate } from '@/lib/format';
-import { useToast } from '@/hooks/use-toast';
-import { BailFormModal } from '@/components/BailFormModal';
-import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { ViewToggle } from '@/components/ViewToggle';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { StatusBadge } from "@/components/StatusBadge";
+import { LoadingSkeleton } from "@/components/LoadingSkeleton";
+import { EmptyState } from "@/components/EmptyState";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useBaux, useResilierBail, useToggleSuiviBail } from "@/hooks/use-baux";
+import { formatFCFA, formatDate } from "@/lib/format";
+import { useToast } from "@/hooks/use-toast";
+import { BailFormModal } from "@/components/BailFormModal";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { ViewToggle } from "@/components/ViewToggle";
 
 export default function BauxPage() {
   const { t } = useTranslation();
-  const [view, setView] = useState<'grid' | 'list'>(() => {
-    return (localStorage.getItem('baux_view') as 'grid' | 'list') || 'list';
+  const [view, setView] = useState<"grid" | "list">(() => {
+    return (localStorage.getItem("baux_view") as "grid" | "list") || "list";
   });
-  const [search, setSearch] = useState('');
-  const [statut, setStatut] = useState('tous');
+  const [search, setSearch] = useState("");
+  const [statut, setStatut] = useState("tous");
   const [modalOpen, setModalOpen] = useState(false);
   const [resilierBailId, setResilierBailId] = useState<number | null>(null);
   const location = useLocation();
@@ -47,14 +47,14 @@ export default function BauxPage() {
     }
   }, [location.state]);
 
-  const handleViewChange = (newView: 'grid' | 'list') => {
+  const handleViewChange = (newView: "grid" | "list") => {
     setView(newView);
-    localStorage.setItem('baux_view', newView);
+    localStorage.setItem("baux_view", newView);
   };
 
   const params: Record<string, string> = {};
   if (search) params.search = search;
-  if (statut !== 'tous') params.statut = statut;
+  if (statut !== "tous") params.statut = statut;
 
   const { data: baux, isLoading } = useBaux(params);
   const resilierMut = useResilierBail();
@@ -74,7 +74,7 @@ export default function BauxPage() {
     if (!retard || retard.niveau === 0) return null;
     return (
       <Badge variant="destructive" className="ml-2 bg-red-500 text-white border-none font-bold animate-pulse px-3 rounded-full">
-        {t('days_overdue', { count: retard.jours })}
+        {t("days_overdue", { count: retard.jours })}
       </Badge>
     );
   };
@@ -83,13 +83,13 @@ export default function BauxPage() {
     <div className="space-y-8 pb-10">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-2">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{t('lease_mgmt')}</h1>
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">{t("lease_mgmt")}</h1>
           <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-1">
-            {t('active_contracts', { count: baux?.length || 0 })}
+            {t("active_contracts", { count: baux?.length || 0 })}
           </p>
         </div>
         <Button onClick={() => setModalOpen(true)} className="rounded-2xl shadow-lg shadow-primary/20 font-black h-12 px-6">
-          <Plus className="mr-2 h-5 w-5" /> {t('Nouveau Bail')}
+          <Plus className="mr-2 h-5 w-5" /> {t("Nouveau Bail")}
         </Button>
       </div>
 
@@ -98,7 +98,7 @@ export default function BauxPage() {
           <div className="relative flex-1 min-w-[280px] max-w-md">
             <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
             <Input 
-              placeholder={t('Rechercher un bail...')} 
+              placeholder={t("Rechercher un bail...")} 
               className="h-14 pl-14 pr-6 rounded-[1.5rem] border-none bg-white dark:bg-slate-900 shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20 text-base font-medium text-slate-900 dark:text-white" 
               value={search} 
               onChange={e => setSearch(e.target.value)} 
@@ -106,13 +106,13 @@ export default function BauxPage() {
           </div>
           <Select value={statut} onValueChange={setStatut}>
             <SelectTrigger className="w-52 h-14 rounded-[1.5rem] border-none bg-white dark:bg-slate-900 shadow-sm font-bold px-6 text-slate-900 dark:text-white">
-              <SelectValue placeholder={t('status_all')} />
+              <SelectValue placeholder={t("status_all")} />
             </SelectTrigger>
             <SelectContent className="rounded-2xl border-none shadow-2xl p-2 bg-white dark:bg-slate-900">
-              <SelectItem value="tous" className="rounded-xl font-bold py-3 px-4 text-slate-900 dark:text-white">{t('status_all')}</SelectItem>
-              <SelectItem value="actif" className="rounded-xl font-bold py-3 px-4 text-slate-900 dark:text-white">{t('status_active')}</SelectItem>
-              <SelectItem value="termine" className="rounded-xl font-bold py-3 px-4 text-slate-900 dark:text-white">{t('status_finished')}</SelectItem>
-              <SelectItem value="resilie" className="rounded-xl font-bold py-3 px-4 text-slate-900 dark:text-white">{t('status_cancelled')}</SelectItem>
+              <SelectItem value="tous" className="rounded-xl font-bold py-3 px-4 text-slate-900 dark:text-white">{t("status_all")}</SelectItem>
+              <SelectItem value="actif" className="rounded-xl font-bold py-3 px-4 text-slate-900 dark:text-white">{t("status_active")}</SelectItem>
+              <SelectItem value="termine" className="rounded-xl font-bold py-3 px-4 text-slate-900 dark:text-white">{t("status_finished")}</SelectItem>
+              <SelectItem value="resilie" className="rounded-xl font-bold py-3 px-4 text-slate-900 dark:text-white">{t("status_cancelled")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -122,15 +122,15 @@ export default function BauxPage() {
       {isLoading ? (
         <div className={cn(
           "px-2 gap-6",
-          view === 'grid' ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3" : "space-y-4"
+          view === "grid" ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3" : "space-y-4"
         )}>
           {Array.from({ length: 4 }).map((_, i) => (
-            <LoadingSkeleton key={i} type={view === 'grid' ? "card" : "table"} />
+            <LoadingSkeleton key={i} type={view === "grid" ? "card" : "table"} />
           ))}
         </div>
       ) : !filteredBaux?.length ? (
-        <EmptyState icon={FileText} title="Aucun bail trouv�" description="Ajustez vos filtres ou cr�ez un nouveau contrat." actionLabel="Nouveau bail" onAction={() => setModalOpen(true)} />
-      ) : view === 'grid' ? (
+        <EmptyState icon={FileText} title="Aucun bail trouvé" description="Ajustez vos filtres ou créez un nouveau contrat." actionLabel="Nouveau bail" onAction={() => setModalOpen(true)} />
+      ) : view === "grid" ? (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 px-2">
           {filteredBaux.map(bail => (
             <Card key={bail.id} className="group border-none shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2.5rem] overflow-hidden bg-white dark:bg-slate-900">
@@ -155,11 +155,11 @@ export default function BauxPage() {
 
                   <div className="mt-8 grid grid-cols-2 gap-4">
                     <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800/50">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{t('tenant')}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{t("tenant")}</p>
                       <p className="text-sm font-bold truncate">{bail.locataire_nom}</p>
                     </div>
                     <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800/50">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{t('rent')}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{t("rent")}</p>
                       <p className="text-sm font-black text-primary">{formatFCFA(bail.loyer_base)}</p>
                     </div>
                   </div>
@@ -167,7 +167,7 @@ export default function BauxPage() {
                   <div className="mt-4 flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50">
                     <Calendar className="h-4 w-4 text-slate-400" />
                     <span className="text-sm font-bold text-slate-600 dark:text-slate-300 transition-colors">
-                      {formatDate(bail.date_debut)} � {bail.date_fin ? formatDate(bail.date_fin) : t('perpetual')}
+                      {formatDate(bail.date_debut)} à {bail.date_fin ? formatDate(bail.date_fin) : t("perpetual")}
                     </span>
                   </div>
                 </div>
@@ -175,8 +175,8 @@ export default function BauxPage() {
                 <div className="px-6 py-4 bg-slate-50/50 dark:bg-slate-800/20 flex items-center justify-between border-t border-slate-100/50 dark:border-slate-800">
                   <div className="flex items-center gap-2">
                     <Badge className={cn(
-                      'rounded-full px-4 py-1 font-black text-[10px] uppercase tracking-widest border-none',
-                      bail.statut === 'actif' ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                      "rounded-full px-4 py-1 font-black text-[10px] uppercase tracking-widest border-none",
+                      bail.statut === "actif" ? "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400" : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                     )}>
                       <StatusBadge status={bail.statut} />
                     </Badge>
@@ -185,7 +185,7 @@ export default function BauxPage() {
                     to={`/baux/${bail.id}`} 
                     className="flex items-center gap-1.5 text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest group/link"
                   >
-                    D�tails <ChevronRight className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
+                    Détails <ChevronRight className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
                   </Link>
                 </div>
               </CardContent>
@@ -199,9 +199,9 @@ export default function BauxPage() {
               <table className="w-full">
                 <thead>
                   <tr className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
-                    <th className="px-8 py-6 text-left text-[11px] font-black underline decoration-primary/30 decoration-2 underline-offset-8 text-slate-400 uppercase tracking-[0.2em]">R�f�rence & Bien</th>
+                    <th className="px-8 py-6 text-left text-[11px] font-black underline decoration-primary/30 decoration-2 underline-offset-8 text-slate-400 uppercase tracking-[0.2em]">Référence & Bien</th>
                     <th className="px-6 py-6 text-left text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] hidden md:table-cell">Locataire</th>
-                    <th className="px-6 py-6 text-left text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] hidden lg:table-cell">P�riode</th>
+                    <th className="px-6 py-6 text-left text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] hidden lg:table-cell">Période</th>
                     <th className="px-6 py-6 text-left text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Loyer</th>
                     <th className="px-6 py-6 text-left text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Statut</th>
                     <th className="px-8 py-6 text-right text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Actions</th>
@@ -225,7 +225,7 @@ export default function BauxPage() {
                       <td className="px-6 py-6 hidden md:table-cell">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-xl bg-slate-900/10 dark:bg-indigo-500/20 flex items-center justify-center text-[10px] font-black text-slate-600 dark:text-indigo-400 ring-2 ring-white/10">
-                            {(bail.locataire_nom || 'L').split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                            {(bail.locataire_nom || "L").split(" ").map((n: any) => n[0]).join("").toUpperCase()}
                           </div>
                           <div className="flex flex-col">
                             <span className="text-sm font-bold text-slate-900 dark:text-white truncate max-w-[150px]">{bail.locataire_nom}</span>
@@ -238,7 +238,7 @@ export default function BauxPage() {
                           <Calendar className="h-4 w-4 text-slate-400" />
                           <div className="flex flex-col">
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{formatDate(bail.date_debut)}</span>
-                            <span className="text-xs font-bold text-slate-900 dark:text-slate-300">{bail.date_fin ? formatDate(bail.date_fin) : 'Ind�fini'}</span>
+                            <span className="text-xs font-bold text-slate-900 dark:text-slate-300">{bail.date_fin ? formatDate(bail.date_fin) : "Indéfini"}</span>
                           </div>
                         </div>
                       </td>
@@ -250,35 +250,19 @@ export default function BauxPage() {
                       </td>
                       <td className="px-6 py-6">
                         <Badge className={cn(
-                          'rounded-full px-4 py-1 font-black text-[10px] uppercase tracking-widest border-none',
-                          bail.statut === 'actif' ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-slate-100 text-slate-400 dark:bg-slate-800/50 dark:text-slate-500'
+                          "rounded-full px-4 py-1 font-black text-[10px] uppercase tracking-widest border-none",
+                          bail.statut === "actif" ? "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400" : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                         )}>
                           <StatusBadge status={bail.statut} />
                         </Badge>
                       </td>
                       <td className="px-8 py-6 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="sm" asChild className="rounded-xl h-10 w-10 p-0 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-400 text-slate-400 dark:text-slate-500 transition-all">
-                            <Link to={`/baux/${bail.id}`}><Eye className="h-5 w-5" /></Link>
+                          <Button variant="ghost" size="icon" asChild className="h-10 w-10 rounded-xl hover:bg-primary/10 hover:text-primary transition-all">
+                            <Link to={`/baux/${bail.id}`}>
+                              <Eye className="h-5 w-5" />
+                            </Link>
                           </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => toggleSuiviMut.mutate(bail.id)}
-                            className={cn("rounded-xl h-10 w-10 p-0 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-slate-400 dark:text-slate-500", bail.is_followed && "text-primary dark:text-primary")}
-                          >
-                            {bail.is_followed ? <UserMinus className="h-5 w-5" /> : <UserCheck className="h-5 w-5" />}
-                          </Button>
-                          {bail.statut === 'actif' && (
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-slate-300 dark:text-slate-600 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl h-10 w-10 p-0 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all" 
-                              onClick={() => setResilierBailId(bail.id)}
-                            >
-                              <XCircle className="h-5 w-5" />
-                            </Button>
-                          )}
                         </div>
                       </td>
                     </tr>
@@ -290,23 +274,30 @@ export default function BauxPage() {
         </Card>
       )}
 
-      <BailFormModal open={modalOpen} onOpenChange={setModalOpen} />
+      {/* Modale de création */}
+      <BailFormModal 
+        open={modalOpen} 
+        onOpenChange={setModalOpen}
+        initialData={location.state?.prefill}
+      />
+
+      {/* Dialogue de résiliation */}
       <ConfirmDialog
         open={!!resilierBailId}
         onOpenChange={() => setResilierBailId(null)}
-        title="R�silier ce bail"
-        description="Cette action marquera le bail comme r�sili�. Assurez-vous d'avoir effectu� l'�tat des lieux de sortie."
-        confirmLabel="Confirmer la r�siliation"
+        title="Résilier le bail"
+        description="Êtes-vous sûr de vouloir résilier ce bail ? Cette action est irréversible."
         onConfirm={() => {
           if (resilierBailId) {
             resilierMut.mutate(resilierBailId, {
               onSuccess: () => {
-                toast({ title: 'Bail r�sili� avec succ�s' });
+                toast({ title: "Bail résilié", description: "Le contrat a été marqué comme résilié." });
                 setResilierBailId(null);
               }
             });
           }
         }}
+        confirmText="Résilier"
         variant="destructive"
       />
     </div>
